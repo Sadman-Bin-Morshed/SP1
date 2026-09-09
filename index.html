@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal profile page for Mahir Shadid, a software development student.">
+    <title>Mahir Shadid | Software Development Student</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <nav class="site-nav container" aria-label="Primary navigation">
+            <a class="brand" href="#top">MS<span>.</span></a>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#skills">Skills</a>
+                <a href="#projects">Projects</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </nav>
+
+        <div class="hero container" id="top">
+            <div class="hero-copy">
+                <p class="eyebrow">Software Development-1</p>
+                <h1>Building useful things with curiosity and care.</h1>
+                <p class="hero-text">
+                    I am Mahir Shadid, a CSE student learning how thoughtful structure,
+                    clean code, and good design work together.
+                </p>
+                <a class="button button-primary" href="#projects">Explore my work <span aria-hidden="true">&#8594;</span></a>
+            </div>
+            <div class="hero-note" aria-label="Profile highlights">
+                <span class="note-number">01</span>
+                <p>Learning the foundations of the web, one project at a time.</p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="about-section container section-grid" id="about">
+            <div class="section-intro">
+                <p class="eyebrow">A little about me</p>
+                <h2>Turning lessons into working experiences.</h2>
+            </div>
+            <div class="about-content">
+                <div class="profile-frame">
+                    <img src="images/IIUC_Central_Mosque_front_view.jpg" alt="Central Mosque at International Islamic University Chittagong">
+                    <span class="image-caption">A place that inspires my learning</span>
+                </div>
+                <div class="about-copy">
+                    <p>
+                        I enjoy breaking large problems into simple steps and then building
+                        solutions that people can understand. My current focus is web
+                        development, responsive interfaces, and the habits that make software
+                        easier to maintain.
+                    </p>
+                    <p>
+                        Outside of coursework, I like exploring new tools, practicing with
+                        small experiments, and learning from each iteration.
+                    </p>
+                    <a class="text-link" href="mailto:mahir.shadid@example.com">mahir.shadid@example.com <span aria-hidden="true">&#8594;</span></a>
+                </div>
+            </div>
+        </section>
+
+        <section class="skills-section" id="skills">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">What I am practicing</p>
+                        <h2>Skills in progress</h2>
+                    </div>
+                    <p class="heading-note">Foundations first. Progress always.</p>
+                </div>
+                <div class="skills-grid">
+                    <article class="skill-item">
+                        <span class="skill-number">01</span>
+                        <h3>HTML</h3>
+                        <p>Semantic structure and accessible page foundations.</p>
+                    </article>
+                    <article class="skill-item">
+                        <span class="skill-number">02</span>
+                        <h3>CSS</h3>
+                        <p>Layouts, visual hierarchy, and responsive styling.</p>
+                    </article>
+                    <article class="skill-item">
+                        <span class="skill-number">03</span>
+                        <h3>JavaScript</h3>
+                        <p>Programming logic and interactive web experiences.</p>
+                    </article>
+                    <article class="skill-item">
+                        <span class="skill-number">04</span>
+                        <h3>Git &amp; GitHub</h3>
+                        <p>Tracking changes and sharing work through version control.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="projects-section container" id="projects">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Selected practice work</p>
+                    <h2>Projects I have explored</h2>
+                </div>
+                <p class="heading-note">Small builds, real lessons.</p>
+            </div>
+            <div class="projects-grid">
+                <article class="project-card project-featured">
+                    <div class="project-topline">
+                        <span>01 / Web fundamentals</span>
+                        <span aria-hidden="true">&#8599;</span>
+                    </div>
+                    <h3>Student Learning Portal</h3>
+                    <p>A semantic student resource page with course links, learning materials, important information, and a feedback form.</p>
+                    <div class="tag-list">
+                        <span>HTML5</span>
+                        <span>Forms</span>
+                        <span>Accessibility</span>
+                    </div>
+                </article>
+                <article class="project-card">
+                    <div class="project-topline">
+                        <span>02 / Responsive design</span>
+                        <span aria-hidden="true">&#8599;</span>
+                    </div>
+                    <h3>EduSpace Dashboard</h3>
+                    <p>A responsive dashboard concept that organizes courses, progress, upcoming tasks, and recent activity in one clear view.</p>
+                    <div class="tag-list">
+                        <span>CSS Grid</span>
+                        <span>Flexbox</span>
+                        <span>Media queries</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="contact-section container" id="contact">
+            <div class="contact-copy">
+                <p class="eyebrow">Have a question?</p>
+                <h2>Let’s start a conversation.</h2>
+                <p>Send a message about a project, a class idea, or just to say hello.</p>
+                <a class="text-link" href="mailto:mahir.shadid@example.com">Email me directly <span aria-hidden="true">&#8594;</span></a>
+            </div>
+            <form class="contact-form" action="#contact" method="post">
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" autocomplete="name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" autocomplete="email" required>
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+                <button class="button button-dark" type="submit">Send message <span aria-hidden="true">&#8594;</span></button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p><strong>Mahir Shadid</strong><br>Software Development-1</p>
+            <p>&copy; 2026 Mahir Shadid. Built with HTML and CSS.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
