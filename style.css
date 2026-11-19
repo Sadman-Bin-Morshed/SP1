@@ -2153,3 +2153,16 @@ h2 {
     from { opacity: 0; filter: blur(14px); transform: scale(0.98); }
     to   { opacity: 1; filter: blur(0);    transform: none; }
 }
+
+
+/* ---------- Skills background: shield grid canvas (drawn by the script) ---------- */
+.shield-grid {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+}
