@@ -34,9 +34,9 @@
                     <img class="hero-photo" src="images/profile.jpg" alt="Portrait of Sadman Bin Morshed">
                 </div>
                 <div class="hero-intro">
-                    <p class="eyebrow">Software Development-1</p>
-                    <h1 id="hero-title"><span class="hero-line"><span class="hero-line-inner">Hello, I’m <em>Sadman.</em></span></span></h1>
-                    <p class="hero-text">
+                    <p class="eyebrow hero-eyebrow" aria-label="Software Development-1"><span class="hx-flip" aria-hidden="true">Software</span> <span class="hx-flip" aria-hidden="true">Development</span><span class="hx-flip" aria-hidden="true">-</span><span class="hx-flip" aria-hidden="true">1</span></p>
+                    <h1 id="hero-title" aria-label="Hello, I’m Sadman."><span class="hero-line"><span class="hero-line-inner" aria-hidden="true"><span class="hx-left" style="--o:3">Hello</span><span class="hx-left" style="--o:2">,</span> <span class="hx-left" style="--o:1">I’m</span> <em class="hx-left" style="--o:0">Sadman.</em></span></span></h1>
+                    <p class="hero-text hero-glass">
                         A CSE student at International Islamic University Chittagong
                         building embedded ESP32 systems, campus automation tools, and security labs.
                     </p>
@@ -207,6 +207,37 @@
 
             root.classList.add("js-enabled");
 
+            // HERO ENTRANCE: start once the loader has gone (or right away if there is no loader)
+            const heroSection = document.querySelector(".hero");
+            const credential = document.querySelector(".hero-credential");
+            if (credential) {
+                // one span per letter; the last letter arrives first
+                const text = credential.textContent.trim();
+                credential.setAttribute("aria-label", text);
+                credential.textContent = "";
+                const letters = [];
+                text.split(" ").forEach((word, wordIndex) => {
+                    if (wordIndex) credential.append(" ");
+                    const wordSpan = document.createElement("span");
+                    wordSpan.className = "hx-word";
+                    wordSpan.setAttribute("aria-hidden", "true");
+                    [...word].forEach((char) => {
+                        const letter = document.createElement("span");
+                        letter.className = "hx-letter";
+                        letter.textContent = char;
+                        wordSpan.append(letter);
+                        letters.push(letter);
+                    });
+                    credential.append(wordSpan);
+                });
+                letters.reverse().forEach((letter, index) => letter.style.setProperty("--l", index));
+            }
+            if (heroSection) {
+                const playHero = () => heroSection.classList.add("hero-play");
+                if (loader && !motionReduced) window.setTimeout(playHero, 1250);
+                else playHero();
+            }
+
             if (loader && !motionReduced) {
                 const count = loader.querySelector(".loader-count");
                 const started = performance.now();
@@ -342,6 +373,19 @@
                     particles.forEach((particle) => {
                         particle.x = (particle.x + particle.vx * 0.5 + width) % width;
                         particle.y = (particle.y + particle.vy * 0.5 + height) % height;
+                        // magnetic feel: nodes near the cursor are pulled toward it, then ease back
+                        let pullX = 0;
+                        let pullY = 0;
+                        const reach = Math.hypot(pointerX - particle.x, pointerY - particle.y);
+                        if (reach < 190 && reach > 1) {
+                            const strength = Math.pow(1 - reach / 190, 2) * 26;
+                            pullX = (pointerX - particle.x) / reach * strength;
+                            pullY = (pointerY - particle.y) / reach * strength;
+                        }
+                        particle.dx = (particle.dx || 0) + (pullX - (particle.dx || 0)) * 0.12;
+                        particle.dy = (particle.dy || 0) + (pullY - (particle.dy || 0)) * 0.12;
+                        particle.px = particle.x + particle.dx;
+                        particle.py = particle.y + particle.dy;
                     });
 
                     // links
@@ -350,25 +394,25 @@
                         for (let j = i + 1; j < particles.length; j++) {
                             const a = particles[i];
                             const b = particles[j];
-                            const gap = Math.hypot(a.x - b.x, a.y - b.y);
+                            const gap = Math.hypot(a.px - b.px, a.py - b.py);
                             if (gap > LINK) continue;
                             links.push([a, b]);
-                            const near = Math.hypot((a.x + b.x) / 2 - pointerX, (a.y + b.y) / 2 - pointerY) < 170;
+                            const near = Math.hypot((a.px + b.px) / 2 - pointerX, (a.py + b.py) / 2 - pointerY) < 170;
                             context.strokeStyle = `rgba(${PEACH}, ${((1 - gap / LINK) * (near ? 0.42 : 0.16)).toFixed(3)})`;
                             context.lineWidth = 1;
                             context.beginPath();
-                            context.moveTo(a.x, a.y);
-                            context.lineTo(b.x, b.y);
+                            context.moveTo(a.px, a.py);
+                            context.lineTo(b.px, b.py);
                             context.stroke();
                         }
                     }
 
                     // nodes
                     particles.forEach((particle) => {
-                        const near = Math.hypot(particle.x - pointerX, particle.y - pointerY) < 170;
+                        const near = Math.hypot(particle.px - pointerX, particle.py - pointerY) < 170;
                         context.fillStyle = `rgba(${PEACH}, ${near ? 0.9 : 0.45})`;
                         context.beginPath();
-                        context.arc(particle.x, particle.y, particle.radius + (near ? 0.6 : 0), 0, Math.PI * 2);
+                        context.arc(particle.px, particle.py, particle.radius + (near ? 0.6 : 0), 0, Math.PI * 2);
                         context.fill();
                     });
 
@@ -380,8 +424,8 @@
                     for (let i = packets.length - 1; i >= 0; i--) {
                         const packet = packets[i];
                         packet.progress += packet.speed;
-                        const x = packet.from.x + (packet.to.x - packet.from.x) * packet.progress;
-                        const y = packet.from.y + (packet.to.y - packet.from.y) * packet.progress;
+                        const x = packet.from.px + (packet.to.px - packet.from.px) * packet.progress;
+                        const y = packet.from.py + (packet.to.py - packet.from.py) * packet.progress;
                         if (packet.blocked && packet.progress > 0.6) {
                             blocks.push({ x, y, life: 1 });     // firewall stops this one
                             packets.splice(i, 1);
