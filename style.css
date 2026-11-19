@@ -1927,3 +1927,229 @@ h2 {
 .carousel-ready .project-card[aria-hidden="true"] {
     filter: brightness(0.96) saturate(0.9);
 }
+
+
+/* =========================================================
+   CONTACT ANIMATIONS (added)
+   - "Have a question?": letters arrive from the left, "?" first ... "Have" last
+   - "Let's start a conversation.": a typing bubble (three dots), then the line pops in like a new message
+   - intro line in a light liquid glass card
+   - "Email me directly": unchanged look, very slight magnetic pull
+   - social links lift on hover and press
+   - form on a frosted (blurred) card; form and send button blur into focus; button lifts on hover
+   Plays when the script adds .ct-play (and replays when you scroll back).
+========================================================= */
+.ct-word,
+.ct-char {
+    display: inline-block;
+}
+
+.ct-word {
+    white-space: nowrap;
+}
+
+/* typing bubble */
+.ct-heading {
+    position: relative;
+}
+
+.ct-msg {
+    display: inline-block;
+    transform-origin: 0 100%;
+}
+
+.ct-typing {
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    display: inline-flex;
+    gap: 6px;
+    padding: 12px 16px;
+    border-radius: 18px 18px 18px 4px;
+    background: var(--white);
+    box-shadow: 0 8px 22px rgba(23, 35, 31, 0.1);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.ct-typing i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.35;
+}
+
+/* intro line: light liquid glass */
+.ct-glass {
+    position: relative;
+    max-width: 360px;
+    padding: 16px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.38));
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 12px 30px rgba(23, 35, 31, 0.08);
+}
+
+/* very slight magnetic pull */
+.ct-magnet {
+    transform: translate(var(--mx, 0px), var(--my, 0px));
+    transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* social links: lift on hover, press down on click */
+.social-card {
+    transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 180ms ease, background-color 180ms ease, box-shadow 280ms ease;
+}
+
+.social-card:hover,
+.social-card:focus-visible {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 22px rgba(23, 35, 31, 0.12);
+}
+
+.social-card:active {
+    transform: translateY(-2px) scale(0.97);
+}
+
+/* frosted form card, with soft colour behind it for the blur to pick up */
+.contact-section::before,
+.contact-section::after {
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    content: "";
+    filter: blur(50px);
+    pointer-events: none;
+}
+
+.contact-section::before {
+    right: 4%;
+    top: 0;
+    width: 340px;
+    height: 260px;
+    background: rgba(217, 95, 61, 0.2);
+}
+
+.contact-section::after {
+    right: 34%;
+    bottom: 90px;
+    width: 300px;
+    height: 220px;
+    background: rgba(47, 93, 80, 0.14);
+}
+
+.ct-frost {
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 14px;
+    background: linear-gradient(140deg, rgba(255, 253, 248, 0.7), rgba(255, 253, 248, 0.45));
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    backdrop-filter: blur(22px) saturate(140%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 22px 50px rgba(23, 35, 31, 0.1);
+}
+
+.ct-frost .button-dark:hover,
+.ct-frost .button-dark:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(47, 93, 80, 0.28);
+}
+
+.ct-frost .button-dark {
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 300ms ease, background-color 180ms ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .contact-section:not(.ct-play) .ct-char,
+    .js-enabled .contact-section:not(.ct-play) .ct-msg,
+    .js-enabled .contact-section:not(.ct-play) .ct-glass,
+    .js-enabled .contact-section:not(.ct-play) .text-link,
+    .js-enabled .contact-section:not(.ct-play) .social-card,
+    .js-enabled .contact-section:not(.ct-play) .ct-frost,
+    .js-enabled .contact-section:not(.ct-play) .ct-frost .button {
+        opacity: 0;
+    }
+
+    .contact-section {
+        animation: none;
+    }
+
+    .contact-section.ct-play .ct-char {
+        animation: ctFromLeft 0.6s var(--ease) both;
+        animation-delay: calc(var(--k, 0) * 45ms);
+    }
+
+    .contact-section.ct-play .ct-typing {
+        animation: ctBubble 1.6s ease both 0.45s;
+    }
+
+    .contact-section.ct-play .ct-typing i {
+        animation: ctDot 0.9s ease-in-out infinite;
+    }
+
+    .contact-section.ct-play .ct-typing i:nth-child(2) { animation-delay: 0.15s; }
+    .contact-section.ct-play .ct-typing i:nth-child(3) { animation-delay: 0.3s; }
+
+    .contact-section.ct-play .ct-msg {
+        animation: ctMessage 0.75s cubic-bezier(0.34, 1.45, 0.64, 1) 2s both;
+    }
+
+    .contact-section.ct-play .ct-glass {
+        animation: ctRise 0.9s var(--ease) 2.35s both;
+    }
+
+    .contact-section.ct-play .text-link {
+        animation: ctFade 0.7s ease 2.6s backwards;
+    }
+
+    .contact-section.ct-play .social-card {
+        animation: ctRise 0.7s var(--ease) backwards;
+        animation-delay: calc(2.7s + var(--s, 0) * 0.1s);
+    }
+
+    .contact-section.ct-play .ct-frost {
+        animation: ctFocus 1.2s ease-out 0.35s backwards;
+    }
+
+    .contact-section.ct-play .ct-frost .button {
+        animation: ctFocus 1s ease-out 1.3s backwards;
+    }
+}
+
+@keyframes ctFromLeft {
+    from { opacity: 0; transform: translateX(-28vw); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes ctBubble {
+    0%   { opacity: 0; transform: translateY(8px) scale(0.8); }
+    15%  { opacity: 1; transform: none; }
+    85%  { opacity: 1; transform: none; }
+    100% { opacity: 0; transform: scale(0.85); }
+}
+
+@keyframes ctDot {
+    0%, 100% { opacity: 0.35; transform: translateY(0); }
+    40%      { opacity: 1;    transform: translateY(-4px); }
+}
+
+@keyframes ctMessage {
+    from { opacity: 0; transform: translateY(14px) scale(0.92); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes ctRise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes ctFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes ctFocus {
+    from { opacity: 0; filter: blur(14px); transform: scale(0.98); }
+    to   { opacity: 1; filter: blur(0);    transform: none; }
+}
