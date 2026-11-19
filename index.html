@@ -49,13 +49,14 @@
 
     <main>
         <section class="skills-section" id="skills" aria-labelledby="skills-title">
+            <!-- Big background lettering (moved from the heading corner) -->
+            <p class="sk-bg"><span class="sk-bg-line">Foundations first.</span> <span class="sk-bg-line sk-bg-warm">Progress always.</span></p>
             <div class="container">
-                <div class="section-heading">
+                <div class="section-heading skills-heading">
                     <div>
-                        <p class="eyebrow">What I have learned</p>
-                        <h2 id="skills-title">Skills I have acquired</h2>
+                        <p class="eyebrow sk-eyebrow" aria-label="What I have learned"><span class="sk-w sk-from-left" aria-hidden="true">What</span> <span class="sk-w sk-from-below" aria-hidden="true">I</span> <span class="sk-w sk-from-above" aria-hidden="true">have</span> <span class="sk-w sk-from-right" aria-hidden="true">learned</span></p>
+                        <h2 id="skills-title" class="sk-swish">Skills I have acquired</h2>
                     </div>
-                    <p class="heading-note">Foundations first. Progress always.</p>
                 </div>
                 <div class="skills-grid" role="list">
                     <article class="skill-item" role="listitem">
@@ -270,7 +271,7 @@
             }
 
             const revealTargets = [
-                ...document.querySelectorAll(".section-heading, .skill-item, .contact-copy, .contact-form, .site-footer")
+                ...document.querySelectorAll(".projects-section .section-heading, .contact-copy, .contact-form, .site-footer")
             ];
             revealTargets.forEach((element) => element.classList.add("reveal"));
 
@@ -289,7 +290,25 @@
                 element.dataset.splitText = "true";
             };
 
-            document.querySelectorAll(".section-heading h2, .contact-copy h2").forEach(splitText);
+            document.querySelectorAll(".projects-section .section-heading h2, .contact-copy h2").forEach(splitText);
+
+            // SKILLS ENTRANCE: plays when the section comes into view, replays when you come back
+            const skillsBlock = document.querySelector(".skills-section");
+            if (skillsBlock) {
+                skillsBlock.querySelectorAll(".skill-item").forEach((card, index) => card.style.setProperty("--card", index));
+                if (hasIntersectionObserver && !motionReduced) {
+                    new IntersectionObserver(([entry]) => {
+                        if (entry.intersectionRatio === 0) {
+                            skillsBlock.classList.remove("sk-play");
+                        } else if (entry.intersectionRatio >= 0.2 && !skillsBlock.classList.contains("sk-play")) {
+                            void skillsBlock.offsetWidth;
+                            skillsBlock.classList.add("sk-play");
+                        }
+                    }, { threshold: [0, 0.2] }).observe(skillsBlock);
+                } else {
+                    skillsBlock.classList.add("sk-play");
+                }
+            }
 
             if (hasIntersectionObserver && !motionReduced) {
                 const revealObserver = new IntersectionObserver((entries) => {
