@@ -1429,3 +1429,159 @@ h2 {
     opacity: 0.9;
     transform: translateY(-10px) rotate(-8deg) scaleY(0.32);
 }
+
+
+/* =========================================================
+   SKILLS ANIMATIONS (added)
+   - "What I have learned": What from the left, I from below, have from above,
+     learned from the right; they meet in one line
+   - "Skills I have acquired": a magical swish reveals it
+   - "Foundations first. Progress always.": big background lettering, appears out of nowhere
+   - cards pop up from the bottom one by one; hovering makes a wave
+   Plays when the script adds .sk-play (and replays when you scroll back).
+========================================================= */
+.sk-w {
+    display: inline-block;
+}
+
+.skills-heading {
+    position: relative;
+}
+
+/* big background lettering, same outline style as the "BUILD LEARN REPEAT" watermark */
+.sk-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    color: transparent;
+    font-size: clamp(3.2rem, 9.5vw, 8.5rem);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.05em;
+    text-align: center;
+    -webkit-text-stroke: 1px rgba(47, 93, 80, 0.13);
+    pointer-events: none;
+    user-select: none;
+}
+
+.sk-bg-line {
+    display: block;
+    white-space: nowrap;
+}
+
+.sk-bg-warm {
+    -webkit-text-stroke-color: rgba(217, 95, 61, 0.16);
+}
+
+/* hover wave: the card you point at rises, its neighbours lift a little, the rest settle */
+.skill-item {
+    transition: transform 520ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 400ms ease;
+}
+
+.skill-item:hover,
+.skill-item:focus-within {
+    transform: translateY(-16px);
+    box-shadow: 0 26px 42px rgba(23, 35, 31, 0.2);
+}
+
+.skill-item:hover + .skill-item,
+.skill-item:has(+ .skill-item:hover) {
+    transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .skills-section:not(.sk-play) .sk-w,
+    .js-enabled .skills-section:not(.sk-play) .sk-swish,
+    .js-enabled .skills-section:not(.sk-play) .sk-bg,
+    .js-enabled .skills-section:not(.sk-play) .skill-item {
+        opacity: 0;
+    }
+
+    /* replace the page-load rise with our own entrance */
+    .skills-heading,
+    .skill-item {
+        animation: none;
+    }
+
+    /* eyebrow: four directions, meeting in one line */
+    .skills-section.sk-play .sk-from-left  { animation: skLeft 1s var(--ease) 0s both; }
+    .skills-section.sk-play .sk-from-below { animation: skBelow 1s var(--ease) 0.12s both; }
+    .skills-section.sk-play .sk-from-above { animation: skAbove 1s var(--ease) 0.24s both; }
+    .skills-section.sk-play .sk-from-right { animation: skRight 1s var(--ease) 0.36s both; }
+
+    /* title: magical swish - a soft-edged reveal sweeps across with a coral streak ahead of it */
+    .sk-swish {
+        position: relative;
+        display: inline-block;
+    }
+
+    .skills-section.sk-play .sk-swish {
+        -webkit-mask-image: linear-gradient(100deg, #000 0%, #000 44%, transparent 56%, transparent 100%);
+        mask-image: linear-gradient(100deg, #000 0%, #000 44%, transparent 56%, transparent 100%);
+        -webkit-mask-size: 260% 100%;
+        mask-size: 260% 100%;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        animation: skSwishReveal 1.25s cubic-bezier(0.6, 0, 0.2, 1) 0.55s both;
+    }
+
+    .skills-section.sk-play .sk-swish::after {
+        position: absolute;
+        top: -12%;
+        bottom: -12%;
+        left: 0;
+        width: 22%;
+        border-radius: 50%;
+        background: linear-gradient(90deg, transparent, rgba(243, 199, 167, 0.85), rgba(217, 95, 61, 0.55), transparent);
+        content: "";
+        filter: blur(8px);
+        transform: skewX(-22deg);
+        pointer-events: none;
+        animation: skSwishStreak 1.25s cubic-bezier(0.6, 0, 0.2, 1) 0.55s both;
+    }
+
+    /* background lettering appears out of nowhere */
+    .skills-section.sk-play .sk-bg {
+        animation: skNowhere 1.6s ease-out 0.9s both;
+    }
+
+    /* cards pop up from the bottom, one after another */
+    .skills-section.sk-play .skill-item {
+        animation: skPop 0.85s cubic-bezier(0.34, 1.4, 0.64, 1) backwards;
+        animation-delay: calc(1.1s + var(--card, 0) * 0.16s);
+    }
+}
+
+@keyframes skLeft  { from { opacity: 0; transform: translateX(-40vw); } to { opacity: 1; transform: none; } }
+@keyframes skRight { from { opacity: 0; transform: translateX(40vw); }  to { opacity: 1; transform: none; } }
+@keyframes skBelow { from { opacity: 0; transform: translateY(60px); }  to { opacity: 1; transform: none; } }
+@keyframes skAbove { from { opacity: 0; transform: translateY(-60px); } to { opacity: 1; transform: none; } }
+
+@keyframes skSwishReveal {
+    from { opacity: 1; -webkit-mask-position: 100% 0; mask-position: 100% 0; letter-spacing: 0.04em; }
+    to   { opacity: 1; -webkit-mask-position: 0% 0;   mask-position: 0% 0;   letter-spacing: normal; }
+}
+
+@keyframes skSwishStreak {
+    0%   { opacity: 0;   left: -20%; }
+    15%  { opacity: 1; }
+    80%  { opacity: 0.9; }
+    100% { opacity: 0;   left: 100%; }
+}
+
+@keyframes skNowhere {
+    0%   { opacity: 0;   filter: blur(16px); transform: scale(1.06); }
+    40%  { opacity: 0.7; filter: blur(5px); }
+    52%  { opacity: 0.2; }
+    72%  { opacity: 1;   filter: blur(0);    transform: scale(1); }
+    100% { opacity: 1;   filter: blur(0);    transform: none; }
+}
+
+@keyframes skPop {
+    from { opacity: 0; transform: translateY(70px) scale(0.94); }
+}
