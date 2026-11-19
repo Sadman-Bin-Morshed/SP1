@@ -1885,3 +1885,45 @@ h2 {
         width: 280px;
     }
 }
+
+
+/* ---------- Projects deck: flowing card switch (update) ----------
+   Cards behind peek out to the side; switching swings the front card out with a tilt
+   and tucks it behind, while the next card rises forward with a soft bounce. */
+.carousel-ready .project-card,
+.carousel-ready .project-card:hover,
+.carousel-ready .project-card:focus-visible {
+    /* --pd is the swing/drag distance as a plain number (pixels), so it can drive both the slide and the tilt */
+    transform:
+        translate3d(calc(var(--pd, 0) * 1px + var(--project-position, 0) * 22px), calc(var(--project-position, 0) * 16px), 0)
+        scale(calc(1 - var(--project-position, 0) * 0.05))
+        rotate(calc(var(--pd, 0) * 0.04deg + var(--project-position, 0) * 2.5deg));
+}
+
+.carousel-ready .project-card {
+    transition:
+        transform 650ms cubic-bezier(0.34, 1.4, 0.64, 1),
+        opacity 430ms ease,
+        top 600ms var(--ease),
+        left 600ms var(--ease),
+        width 600ms var(--ease),
+        height 600ms var(--ease),
+        box-shadow 300ms ease,
+        border-color 300ms ease,
+        filter 400ms ease;
+}
+
+/* while out at the side: quicker, smooth swing */
+.carousel-ready .project-card.project-swing {
+    transition:
+        transform 380ms cubic-bezier(0.3, 0.7, 0.3, 1),
+        top 600ms var(--ease),
+        left 600ms var(--ease),
+        width 600ms var(--ease),
+        height 600ms var(--ease);
+}
+
+/* cards further back are a little dimmer, so the stack reads clearly */
+.carousel-ready .project-card[aria-hidden="true"] {
+    filter: brightness(0.96) saturate(0.9);
+}
