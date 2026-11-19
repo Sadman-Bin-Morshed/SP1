@@ -302,7 +302,7 @@
                     canvas.width = width * scale;
                     canvas.height = height * scale;
                     context.setTransform(scale, 0, 0, scale, 0, 0);
-                    const count = Math.min(80, Math.round(width * height / 15000));
+                    const count = Math.min(70, Math.round(width * height / 16000));
                     while (particles.length < count) {
                         particles.push({
                             x: Math.random() * width,
@@ -315,20 +315,107 @@
                     particles.length = count;
                 };
 
+                // Cybersecurity network map: the particles are network nodes joined by faint lines.
+                // Small coral "packets" travel along the links; some are stopped half-way by a
+                // firewall (a tiny padlock flash). Links near the cursor glow a little brighter.
+                const packets = [];
+                const blocks = [];
+                const PEACH = "243, 199, 167";
+                const CORAL = "217, 95, 61";
+                const LINK = 150;
+
+                const drawLock = (x, y, size, alpha) => {
+                    context.strokeStyle = `rgba(${PEACH}, ${alpha})`;
+                    context.fillStyle = `rgba(${PEACH}, ${alpha})`;
+                    context.lineWidth = 1.2;
+                    context.beginPath();
+                    context.arc(x, y - size * 0.35, size * 0.32, Math.PI, 0);
+                    context.stroke();
+                    context.fillRect(x - size * 0.45, y - size * 0.35, size * 0.9, size * 0.7);
+                };
+
                 const drawParticles = () => {
                     animationFrame = 0;
                     if (!visible || !canvas || !context) return;
                     context.clearRect(0, 0, width, height);
+
                     particles.forEach((particle) => {
-                        particle.x = (particle.x + particle.vx + width) % width;
-                        particle.y = (particle.y + particle.vy + height) % height;
-                        const distance = Math.hypot(particle.x - pointerX, particle.y - pointerY);
-                        const alpha = distance < 170 ? 0.85 : 0.3;
-                        context.fillStyle = `rgba(243, 199, 167, ${alpha})`;
+                        particle.x = (particle.x + particle.vx * 0.5 + width) % width;
+                        particle.y = (particle.y + particle.vy * 0.5 + height) % height;
+                    });
+
+                    // links
+                    const links = [];
+                    for (let i = 0; i < particles.length; i++) {
+                        for (let j = i + 1; j < particles.length; j++) {
+                            const a = particles[i];
+                            const b = particles[j];
+                            const gap = Math.hypot(a.x - b.x, a.y - b.y);
+                            if (gap > LINK) continue;
+                            links.push([a, b]);
+                            const near = Math.hypot((a.x + b.x) / 2 - pointerX, (a.y + b.y) / 2 - pointerY) < 170;
+                            context.strokeStyle = `rgba(${PEACH}, ${((1 - gap / LINK) * (near ? 0.42 : 0.16)).toFixed(3)})`;
+                            context.lineWidth = 1;
+                            context.beginPath();
+                            context.moveTo(a.x, a.y);
+                            context.lineTo(b.x, b.y);
+                            context.stroke();
+                        }
+                    }
+
+                    // nodes
+                    particles.forEach((particle) => {
+                        const near = Math.hypot(particle.x - pointerX, particle.y - pointerY) < 170;
+                        context.fillStyle = `rgba(${PEACH}, ${near ? 0.9 : 0.45})`;
                         context.beginPath();
-                        context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                        context.arc(particle.x, particle.y, particle.radius + (near ? 0.6 : 0), 0, Math.PI * 2);
                         context.fill();
                     });
+
+                    // packets travelling along the links
+                    if (packets.length < 9 && links.length && Math.random() < 0.06) {
+                        const [from, to] = links[Math.floor(Math.random() * links.length)];
+                        packets.push({ from, to, progress: 0, speed: 0.006 + Math.random() * 0.008, blocked: Math.random() < 0.25 });
+                    }
+                    for (let i = packets.length - 1; i >= 0; i--) {
+                        const packet = packets[i];
+                        packet.progress += packet.speed;
+                        const x = packet.from.x + (packet.to.x - packet.from.x) * packet.progress;
+                        const y = packet.from.y + (packet.to.y - packet.from.y) * packet.progress;
+                        if (packet.blocked && packet.progress > 0.6) {
+                            blocks.push({ x, y, life: 1 });     // firewall stops this one
+                            packets.splice(i, 1);
+                            continue;
+                        }
+                        if (packet.progress >= 1) {
+                            packets.splice(i, 1);
+                            continue;
+                        }
+                        context.fillStyle = `rgba(${CORAL}, 0.95)`;
+                        context.shadowColor = `rgba(${CORAL}, 0.9)`;
+                        context.shadowBlur = 8;
+                        context.beginPath();
+                        context.arc(x, y, 2.4, 0, Math.PI * 2);
+                        context.fill();
+                        context.shadowBlur = 0;
+                    }
+
+                    // firewall blocks: a ring and a small padlock that fade out
+                    for (let i = blocks.length - 1; i >= 0; i--) {
+                        const block = blocks[i];
+                        block.life -= 0.02;
+                        if (block.life <= 0) {
+                            blocks.splice(i, 1);
+                            continue;
+                        }
+                        context.strokeStyle = `rgba(${CORAL}, ${(block.life * 0.6).toFixed(3)})`;
+                        context.lineWidth = 1;
+                        context.beginPath();
+                        context.arc(block.x, block.y, 6 + (1 - block.life) * 16, 0, Math.PI * 2);
+                        context.stroke();
+                        drawLock(block.x, block.y + 2, 9, (block.life * 0.9).toFixed(3));
+                    }
+
                     animationFrame = window.requestAnimationFrame(drawParticles);
                 };
 
