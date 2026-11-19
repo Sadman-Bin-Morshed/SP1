@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="site-loader" aria-hidden="true">
+        <div class="loader-ring">SADMAN &middot; BUILD &middot; LEARN &middot; REPEAT &middot;</div>
+        <strong class="loader-count">00%</strong>
+    </div>
+
     <header class="site-header">
         <nav class="site-nav container" aria-label="Primary navigation">
             <a class="brand" href="#top">Sadman Bin Morshed<span>.</span></a>
@@ -16,19 +21,26 @@
                 <a href="#skills">Skills</a>
                 <a href="#projects">Projects</a>
                 <a href="#contact">Contact</a>
+                <a href="https://github.com/phonkboisad" target="_blank" rel="noopener noreferrer">GitHub</a>
             </div>
         </nav>
 
         <section class="hero container" id="top" aria-labelledby="hero-title">
+            <canvas class="hero-canvas" aria-hidden="true"></canvas>
+            <div class="hero-spotlight" aria-hidden="true"></div>
             <div class="hero-copy">
-                <img class="hero-photo" src="images/profile.jpg" alt="Portrait of Sadman Bin Morshed">
+                <div class="hero-photo-frame portrait-3d">
+                    <span class="hero-photo-orbit" aria-hidden="true"></span>
+                    <img class="hero-photo" src="images/profile.jpg" alt="Portrait of Sadman Bin Morshed">
+                </div>
                 <div class="hero-intro">
                     <p class="eyebrow">Software Development-1</p>
-                    <h1 id="hero-title">Hello, I’m Sadman.</h1>
+                    <h1 id="hero-title"><span class="hero-line"><span class="hero-line-inner">Hello, I’m <em>Sadman.</em></span></span></h1>
                     <p class="hero-text">
-                                                A CSE student learning how thoughtful structure,
-                                                clean code, and good design work together.
+                        A CSE student at International Islamic University Chittagong
+                        building embedded ESP32 systems, campus automation tools, and security labs.
                     </p>
+                    <p class="hero-credential">CSE-2340 &middot; IIUC &middot; GH-900 GitHub Foundations</p>
                     <a class="button button-primary" href="#projects">Explore my work <span aria-hidden="true">&#8594;</span></a>
                 </div>
             </div>
@@ -64,7 +76,7 @@
                     <article class="skill-item" role="listitem">
                         <span class="skill-number">04</span>
                         <h3>Git &amp; GitHub</h3>
-                        <p>Managing code, tracking progress, and collaborating through version control.</p>
+                        <p>Managing code, automation workflows, and collaboration through version control.</p>
                     </article>
                 </div>
             </div>
@@ -78,7 +90,8 @@
                 </div>
                 <p class="heading-note">Small builds, real lessons.</p>
             </div>
-            <div class="projects-grid" role="list">
+            <div class="projects-grid" role="region" aria-roledescription="carousel"
+                aria-label="Projects. Drag, swipe, scroll, or use the arrow keys to browse projects." tabindex="0">
                 <a class="project-card project-featured" href="https://github.com/Phonkboisad/CGPA-stats" target="_blank" rel="noreferrer" role="listitem">
                     <div class="project-topline">
                         <span>01 / C application</span>
@@ -113,6 +126,28 @@
                         <span>View repository</span>
                     </div>
                 </a>
+                <a class="project-card project-coursework" href="https://github.com/Phonkboisad/MP2" target="_blank" rel="noopener noreferrer" role="listitem">
+                    <div class="project-topline">
+                        <span>03 / Course portfolio</span>
+                        <span aria-hidden="true">&#8599;</span>
+                    </div>
+                    <h3>CSE-2340 MP2</h3>
+                    <p>A responsive portfolio project covering semantic HTML, interactive project filtering, technical skills, and client-side form validation.</p>
+                    <div class="tag-list">
+                        <span>HTML5</span>
+                        <span>Tailwind CSS</span>
+                        <span>JavaScript</span>
+                    </div>
+                    <div class="project-meta">
+                        <span>IIUC coursework</span>
+                        <span>View repository</span>
+                    </div>
+                </a>
+            </div>
+            <div class="project-controls" aria-label="Project carousel controls">
+                <button class="project-control" type="button" data-project="prev" aria-label="Previous project">&#8592;</button>
+                <span class="project-count" aria-live="polite"><span class="project-current">01</span> / 03</span>
+                <button class="project-control" type="button" data-project="next" aria-label="Next project">&#8594;</button>
             </div>
         </section>
 
@@ -131,7 +166,7 @@
                         <img src="images/email.png" alt="">
                         <strong>Email</strong>
                     </a>
-                    <a class="social-card" href="https://github.com/Sadman-Bin-Morshed" target="_blank" rel="noreferrer" aria-label="GitHub">
+                    <a class="social-card" href="https://github.com/phonkboisad" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
                         <img src="images/github.png" alt="">
                         <strong>GitHub</strong>
                     </a>
@@ -160,6 +195,341 @@
             </form>
         </section>
     </main>
+
+    <script>
+        (() => {
+            const root = document.documentElement;
+            const motionReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+            const hasIntersectionObserver = "IntersectionObserver" in window;
+            const hero = document.querySelector(".hero");
+            const loader = document.querySelector(".site-loader");
+
+            root.classList.add("js-enabled");
+
+            if (loader && !motionReduced) {
+                const count = loader.querySelector(".loader-count");
+                const started = performance.now();
+                const updateLoader = (now) => {
+                    const progress = Math.min(100, Math.round(((now - started) / 900) * 100));
+                    if (count) count.textContent = `${String(progress).padStart(2, "0")}%`;
+                    if (progress < 100) window.requestAnimationFrame(updateLoader);
+                };
+                window.requestAnimationFrame(updateLoader);
+                window.setTimeout(() => loader.classList.add("loader-out"), 1100);
+            } else if (loader) {
+                loader.remove();
+            }
+
+            const revealTargets = [
+                ...document.querySelectorAll(".section-heading, .skill-item, .contact-copy, .contact-form, .site-footer")
+            ];
+            revealTargets.forEach((element) => element.classList.add("reveal"));
+
+            const splitText = (element) => {
+                if (!element || element.dataset.splitText === "true") return;
+                const words = element.textContent.trim().split(/\s+/);
+                element.textContent = "";
+                words.forEach((word, index) => {
+                    const span = document.createElement("span");
+                    span.className = "scroll-word";
+                    span.style.setProperty("--word-index", index);
+                    span.textContent = word;
+                    element.append(span);
+                    if (index < words.length - 1) element.append(" ");
+                });
+                element.dataset.splitText = "true";
+            };
+
+            document.querySelectorAll(".section-heading h2, .contact-copy h2").forEach(splitText);
+
+            if (hasIntersectionObserver && !motionReduced) {
+                const revealObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) entry.target.classList.add("is-visible");
+                    });
+                }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
+                revealTargets.forEach((target) => revealObserver.observe(target));
+
+                const wordObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) entry.target.classList.add("is-visible");
+                    });
+                }, { threshold: 0.5 });
+                document.querySelectorAll(".scroll-word").forEach((word) => wordObserver.observe(word));
+            } else {
+                revealTargets.forEach((target) => target.classList.add("is-visible"));
+                document.querySelectorAll(".scroll-word").forEach((word) => word.classList.add("is-visible"));
+            }
+
+            const sections = [...document.querySelectorAll("main section[id]")];
+            const navLinks = [...document.querySelectorAll(".nav-links a[href^='#']")];
+            if (hasIntersectionObserver && navLinks.length) {
+                const navObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (!entry.isIntersecting) return;
+                        navLinks.forEach((link) => {
+                            link.toggleAttribute("aria-current", link.getAttribute("href") === `#${entry.target.id}`);
+                        });
+                    });
+                }, { rootMargin: "-42% 0px -48% 0px" });
+                sections.forEach((section) => navObserver.observe(section));
+            }
+
+            window.addEventListener("scroll", () => {
+                document.querySelector(".site-nav")?.classList.toggle("is-scrolled", window.scrollY > 24);
+            }, { passive: true });
+
+            if (hero && finePointer && !motionReduced) {
+                const canvas = hero.querySelector(".hero-canvas");
+                const context = canvas?.getContext("2d");
+                const spotlight = hero.querySelector(".hero-spotlight");
+                const portrait = hero.querySelector(".portrait-3d");
+                const particles = [];
+                let width = 0;
+                let height = 0;
+                let animationFrame = 0;
+                let pointerX = -999;
+                let pointerY = -999;
+                let visible = true;
+
+                const resizeCanvas = () => {
+                    if (!canvas || !context) return;
+                    const bounds = hero.getBoundingClientRect();
+                    const scale = Math.min(window.devicePixelRatio || 1, 2);
+                    width = bounds.width;
+                    height = bounds.height;
+                    canvas.width = width * scale;
+                    canvas.height = height * scale;
+                    context.setTransform(scale, 0, 0, scale, 0, 0);
+                    const count = Math.min(80, Math.round(width * height / 15000));
+                    while (particles.length < count) {
+                        particles.push({
+                            x: Math.random() * width,
+                            y: Math.random() * height,
+                            vx: (Math.random() - 0.5) * 0.3,
+                            vy: (Math.random() - 0.5) * 0.3,
+                            radius: Math.random() * 1.4 + 0.6
+                        });
+                    }
+                    particles.length = count;
+                };
+
+                const drawParticles = () => {
+                    animationFrame = 0;
+                    if (!visible || !canvas || !context) return;
+                    context.clearRect(0, 0, width, height);
+                    particles.forEach((particle) => {
+                        particle.x = (particle.x + particle.vx + width) % width;
+                        particle.y = (particle.y + particle.vy + height) % height;
+                        const distance = Math.hypot(particle.x - pointerX, particle.y - pointerY);
+                        const alpha = distance < 170 ? 0.85 : 0.3;
+                        context.fillStyle = `rgba(243, 199, 167, ${alpha})`;
+                        context.beginPath();
+                        context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                        context.fill();
+                    });
+                    animationFrame = window.requestAnimationFrame(drawParticles);
+                };
+
+                const wakeParticles = () => {
+                    if (!animationFrame) animationFrame = window.requestAnimationFrame(drawParticles);
+                };
+
+                resizeCanvas();
+                window.addEventListener("resize", resizeCanvas, { passive: true });
+                if ("ResizeObserver" in window) new ResizeObserver(resizeCanvas).observe(hero);
+                if (hasIntersectionObserver) {
+                    new IntersectionObserver(([entry]) => {
+                        visible = entry.isIntersecting;
+                        if (visible) wakeParticles();
+                    }).observe(hero);
+                }
+                wakeParticles();
+
+                hero.addEventListener("pointermove", (event) => {
+                    if (event.pointerType !== "mouse") return;
+                    const bounds = hero.getBoundingClientRect();
+                    pointerX = event.clientX - bounds.left;
+                    pointerY = event.clientY - bounds.top;
+                    hero.classList.add("is-hovered");
+                    spotlight?.style.setProperty("--mouse-x", `${pointerX}px`);
+                    spotlight?.style.setProperty("--mouse-y", `${pointerY}px`);
+                    if (portrait) {
+                        const photoBounds = portrait.getBoundingClientRect();
+                        const x = (event.clientX - photoBounds.left - photoBounds.width / 2) / photoBounds.width;
+                        const y = (event.clientY - photoBounds.top - photoBounds.height / 2) / photoBounds.height;
+                        portrait.style.setProperty("--tilt-x", `${Math.max(-1, Math.min(1, -y)) * 7}deg`);
+                        portrait.style.setProperty("--tilt-y", `${Math.max(-1, Math.min(1, x)) * 9}deg`);
+                    }
+                    wakeParticles();
+                });
+
+                hero.addEventListener("pointerleave", () => {
+                    pointerX = -999;
+                    pointerY = -999;
+                    hero.classList.remove("is-hovered");
+                    portrait?.style.removeProperty("--tilt-x");
+                    portrait?.style.removeProperty("--tilt-y");
+                });
+            }
+
+            const skillsSection = document.querySelector(".skills-section");
+            if (skillsSection && finePointer && !motionReduced) {
+                skillsSection.addEventListener("pointermove", (event) => {
+                    const bounds = skillsSection.getBoundingClientRect();
+                    skillsSection.style.setProperty("--skill-x", `${event.clientX - bounds.left}px`);
+                    skillsSection.style.setProperty("--skill-y", `${event.clientY - bounds.top}px`);
+                    skillsSection.classList.add("aurora-active");
+                });
+                skillsSection.addEventListener("pointerleave", () => {
+                    skillsSection.classList.remove("aurora-active");
+                });
+            }
+
+            const contactForm = document.querySelector(".contact-form");
+            if (contactForm && finePointer && !motionReduced) {
+                contactForm.addEventListener("pointermove", (event) => {
+                    const bounds = contactForm.getBoundingClientRect();
+                    contactForm.style.setProperty("--form-x", `${event.clientX - bounds.left}px`);
+                    contactForm.style.setProperty("--form-y", `${event.clientY - bounds.top}px`);
+                });
+            }
+
+            const section = document.querySelector(".projects-section");
+            const carousel = section?.querySelector(".projects-grid");
+            const cards = carousel ? [...carousel.querySelectorAll(".project-card")] : [];
+
+            if (!section || !carousel || cards.length < 2) {
+                return;
+            }
+
+            const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            const current = section.querySelector(".project-current");
+            const controls = section.querySelectorAll("[data-project]");
+            let order = [...cards];
+            let dragging = false;
+            let startX = 0;
+            let distance = 0;
+            let locked = false;
+
+            const updateLayout = () => {
+                order.forEach((card, index) => {
+                    const position = index === 0 ? 0 : Math.max(0, index - Math.min(1, Math.max(0, -distance / 200)));
+                    card.style.setProperty("--project-position", position);
+                    card.style.zIndex = String(order.length - index);
+                    card.setAttribute("aria-hidden", index === 0 ? "false" : "true");
+                });
+                if (current) {
+                    current.textContent = String(cards.indexOf(order[0]) + 1).padStart(2, "0");
+                }
+            };
+
+            const resetDrag = () => {
+                distance = 0;
+                order[0].style.setProperty("--project-distance", "0px");
+                updateLayout();
+            };
+
+            const next = () => {
+                if (locked) return;
+                locked = true;
+                const top = order.shift();
+                if (!top) return;
+                order.push(top);
+                top.classList.add("project-fly");
+                top.style.setProperty("--project-distance", `-${carousel.clientWidth * 1.25}px`);
+                updateLayout();
+                window.setTimeout(() => {
+                    top.classList.remove("project-fly");
+                    top.style.setProperty("--project-distance", "0px");
+                    updateLayout();
+                    locked = false;
+                }, reduceMotion ? 0 : 430);
+            };
+
+            const previous = () => {
+                if (locked) return;
+                locked = true;
+                const card = order.pop();
+                if (!card) return;
+                order.unshift(card);
+                card.classList.add("project-no-anim");
+                card.style.setProperty("--project-distance", `-${carousel.clientWidth * 1.25}px`);
+                updateLayout();
+                requestAnimationFrame(() => {
+                    card.classList.remove("project-no-anim");
+                    card.style.setProperty("--project-distance", "0px");
+                });
+                window.setTimeout(() => {
+                    locked = false;
+                }, reduceMotion ? 0 : 430);
+            };
+
+            carousel.classList.add("carousel-ready");
+            section.classList.add("carousel-enabled");
+            updateLayout();
+
+            carousel.addEventListener("pointerdown", (event) => {
+                if (locked || event.button > 0 || !order[0].contains(event.target)) return;
+                dragging = true;
+                startX = event.clientX;
+                distance = 0;
+                carousel.classList.add("is-dragging");
+                carousel.setPointerCapture(event.pointerId);
+            });
+
+            carousel.addEventListener("pointermove", (event) => {
+                if (!dragging) return;
+                distance = event.clientX - startX;
+                order[0].style.setProperty("--project-distance", `${distance}px`);
+                updateLayout();
+            });
+
+            const endDrag = () => {
+                if (!dragging) return;
+                dragging = false;
+                carousel.classList.remove("is-dragging");
+                if (distance <= -80) next();
+                else if (distance >= 80) previous();
+                else resetDrag();
+            };
+
+            carousel.addEventListener("pointerup", endDrag);
+            carousel.addEventListener("pointercancel", endDrag);
+            carousel.addEventListener("lostpointercapture", endDrag);
+
+            let wheelDistance = 0;
+            let wheelLock = 0;
+            carousel.addEventListener("wheel", (event) => {
+                if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+                event.preventDefault();
+                if (Date.now() < wheelLock) return;
+                wheelDistance += event.deltaX;
+                if (Math.abs(wheelDistance) > 60) {
+                    wheelDistance > 0 ? next() : previous();
+                    wheelDistance = 0;
+                    wheelLock = Date.now() + 650;
+                }
+            }, { passive: false });
+
+            carousel.addEventListener("keydown", (event) => {
+                if (event.key === "ArrowRight") {
+                    event.preventDefault();
+                    next();
+                } else if (event.key === "ArrowLeft") {
+                    event.preventDefault();
+                    previous();
+                }
+            });
+
+            controls.forEach((control) => {
+                control.addEventListener("click", () => {
+                    control.dataset.project === "next" ? next() : previous();
+                });
+            });
+        })();
+    </script>
 
     <footer class="site-footer">
         <div class="container footer-content">
