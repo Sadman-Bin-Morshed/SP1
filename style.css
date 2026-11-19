@@ -2166,3 +2166,188 @@ h2 {
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
     mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
 }
+
+
+/* =========================================================
+   PROJECTS BACKGROUND: curtain reveal (added)
+   Two cream curtain panels with soft green folds part to reveal big lettering:
+   "Small builds," top left, "real lessons." bottom right. The small card sits between them;
+   an opened card covers them. The old BUILD/LEARN/REPEAT watermark is hidden here so the
+   new lettering stays readable.
+========================================================= */
+.projects-section::before {
+    display: none;
+}
+
+.pj-stage-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.pj-bg-word {
+    position: absolute;
+    color: rgba(47, 93, 80, 0.03);
+    font-size: clamp(2.8rem, 7.2vw, 6.4rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 0.95;
+    white-space: nowrap;
+    -webkit-text-stroke: 1.5px rgba(47, 93, 80, 0.3);
+}
+
+.pj-bg-top {
+    top: 30%;
+    left: 0;
+}
+
+.pj-bg-bottom {
+    right: 0;
+    bottom: 1%;
+    color: rgba(217, 95, 61, 0.04);
+    -webkit-text-stroke-color: rgba(217, 95, 61, 0.4);
+}
+
+/* curtain panels: only shown when the entrance can actually play */
+.pj-curtain {
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .pj-curtain {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        display: block;
+        width: 51%;
+        background:
+            repeating-linear-gradient(90deg,
+                rgba(47, 93, 80, 0.0) 0px,
+                rgba(47, 93, 80, 0.045) 18px,
+                rgba(255, 253, 248, 0.6) 34px,
+                rgba(47, 93, 80, 0.0) 52px),
+            var(--paper);
+        box-shadow: 0 0 40px rgba(23, 35, 31, 0.08);
+    }
+
+    .js-enabled .pj-curtain-left {
+        left: 0;
+        border-right: 2px solid rgba(217, 95, 61, 0.45);
+        transform-origin: 0 0;
+    }
+
+    .js-enabled .pj-curtain-right {
+        right: 0;
+        border-left: 2px solid rgba(217, 95, 61, 0.45);
+        transform-origin: 100% 0;
+    }
+
+    .projects-section.pj-play .pj-curtain-left {
+        animation: curtainLeft 1.6s cubic-bezier(0.7, 0, 0.2, 1) 0.25s forwards;
+    }
+
+    .projects-section.pj-play .pj-curtain-right {
+        animation: curtainRight 1.6s cubic-bezier(0.7, 0, 0.2, 1) 0.25s forwards;
+    }
+
+    /* lettering settles in as the curtains open */
+    .js-enabled .projects-section:not(.pj-play) .pj-bg-word {
+        opacity: 0;
+    }
+
+    .projects-section.pj-play .pj-bg-top {
+        animation: curtainWord 1.4s var(--ease) 0.6s both;
+    }
+
+    .projects-section.pj-play .pj-bg-bottom {
+        animation: curtainWord 1.4s var(--ease) 0.8s both;
+    }
+}
+
+@keyframes curtainLeft {
+    0%   { transform: translateX(0) skewY(0deg); }
+    35%  { transform: translateX(-30%) skewY(1.2deg); }
+    100% { transform: translateX(-102%) skewY(0deg); }
+}
+
+@keyframes curtainRight {
+    0%   { transform: translateX(0) skewY(0deg); }
+    35%  { transform: translateX(30%) skewY(-1.2deg); }
+    100% { transform: translateX(102%) skewY(0deg); }
+}
+
+@keyframes curtainWord {
+    from { opacity: 0; transform: scale(0.94); filter: blur(6px); }
+    to   { opacity: 1; transform: none;        filter: blur(0); }
+}
+
+/* =========================================================
+   CONTACT: soft drapes at the edges (added, matches the Projects curtain)
+   Two slim cream drapes with green folds and a coral hem line hang at the sides;
+   they draw in when the section appears and sway very gently.
+========================================================= */
+.ct-drape {
+    position: absolute;
+    top: -10px;
+    bottom: 40px;
+    z-index: -1;
+    width: 70px;
+    background:
+        repeating-linear-gradient(90deg,
+            rgba(47, 93, 80, 0.0) 0px,
+            rgba(47, 93, 80, 0.06) 12px,
+            rgba(255, 253, 248, 0.7) 22px,
+            rgba(47, 93, 80, 0.0) 34px),
+        rgba(244, 241, 234, 0.9);
+    opacity: 0.75;
+    pointer-events: none;
+    transform-origin: 50% 0;
+}
+
+.ct-drape-left {
+    left: -40px;
+    border-right: 2px solid rgba(217, 95, 61, 0.35);
+    border-radius: 0 0 28px 0;
+}
+
+.ct-drape-right {
+    right: -40px;
+    border-left: 2px solid rgba(217, 95, 61, 0.35);
+    border-radius: 0 0 0 28px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .contact-section.ct-play .ct-drape {
+        animation:
+            drapeIn 1.4s cubic-bezier(0.7, 0, 0.2, 1) both,
+            drapeSway 7s ease-in-out 1.4s infinite;
+    }
+
+    .contact-section.ct-play .ct-drape-right {
+        animation:
+            drapeIn 1.4s cubic-bezier(0.7, 0, 0.2, 1) both,
+            drapeSway 7s ease-in-out -3.5s infinite;
+    }
+
+    .js-enabled .contact-section:not(.ct-play) .ct-drape {
+        transform: scaleY(0);
+    }
+}
+
+@keyframes drapeIn {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+}
+
+@keyframes drapeSway {
+    0%, 100% { transform: skewX(0deg); }
+    50%      { transform: skewX(1.6deg); }
+}
+
+@media (max-width: 760px) {
+    .ct-drape { width: 40px; }
+    .ct-drape-left { left: -20px; }
+    .ct-drape-right { right: -20px; }
+}
