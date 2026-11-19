@@ -84,13 +84,6 @@
         </section>
 
         <section class="projects-section container" id="projects" aria-labelledby="projects-title">
-            <!-- Background: big lettering revealed by two curtain panels that part when the section appears -->
-            <div class="pj-stage-bg" aria-hidden="true">
-                <span class="pj-bg-word pj-bg-top">Small builds,</span>
-                <span class="pj-bg-word pj-bg-bottom">real lessons.</span>
-                <span class="pj-curtain pj-curtain-left"></span>
-                <span class="pj-curtain pj-curtain-right"></span>
-            </div>
             <div class="section-heading projects-heading">
                 <div>
                     <p class="eyebrow pj-type">Selected practice work</p>
@@ -99,6 +92,12 @@
             </div>
             <div class="projects-grid" role="region" aria-roledescription="carousel"
                 aria-label="Projects. Drag, swipe, scroll, or use the arrow keys to browse projects." tabindex="0">
+                <!-- Stage curtain: "Small | builds," and "real | lessons." split across the two panels;
+                     holds so the phrase can be read, then parts slowly and gathers at the sides -->
+                <div class="pj-velvet" aria-hidden="true">
+                    <span class="pj-panel pj-panel-left"><span class="pj-panel-text"><span>Small</span><span class="pj-warm">real</span></span></span>
+                    <span class="pj-panel pj-panel-right"><span class="pj-panel-text"><span>builds,</span><span class="pj-warm">lessons.</span></span></span>
+                </div>
                 <a class="project-card project-featured" href="https://github.com/Phonkboisad/CGPA-stats" target="_blank" rel="noreferrer" role="listitem">
                     <div class="project-topline">
                         <span>01 / C application</span>
