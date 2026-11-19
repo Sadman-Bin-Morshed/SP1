@@ -714,6 +714,103 @@
                 });
             }
 
+            // SKILLS BACKGROUND: shield grid - a faint honeycomb; cells near the cursor light up in coral
+            // and soft ripples spread out from the cursor (a slow ambient ripple plays when idle)
+            const shieldHost = document.querySelector(".skills-section");
+            if (shieldHost) {
+                const shield = document.createElement("canvas");
+                shield.className = "shield-grid";
+                shield.setAttribute("aria-hidden", "true");
+                shieldHost.prepend(shield);
+                const sctx = shield.getContext("2d");
+                const HEX = 30;                                 // hexagon radius
+                const GREEN = "47, 93, 80";
+                const CORAL = "217, 95, 61";
+                let sw = 0, sh = 0, sx = -999, sy = -999, inside = false, sraf = 0, shown = false;
+                let ripples = [], lastRipple = 0, lastAmbient = 0;
+
+                const sizeShield = () => {
+                    const box = shieldHost.getBoundingClientRect();
+                    const scale = Math.min(window.devicePixelRatio || 1, 2);
+                    sw = box.width; sh = box.height;
+                    shield.width = sw * scale; shield.height = sh * scale;
+                    sctx.setTransform(scale, 0, 0, scale, 0, 0);
+                };
+
+                const hexPath = (x, y, r) => {
+                    sctx.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                        const a = Math.PI / 3 * i + Math.PI / 6;
+                        i ? sctx.lineTo(x + r * Math.cos(a), y + r * Math.sin(a)) : sctx.moveTo(x + r * Math.cos(a), y + r * Math.sin(a));
+                    }
+                    sctx.closePath();
+                };
+
+                const drawShield = (now) => {
+                    sraf = 0;
+                    sctx.clearRect(0, 0, sw, sh);
+                    const live = finePointer && !motionReduced;
+                    if (live) {
+                        if (inside && now - lastRipple > 1300) { ripples.push({ x: sx, y: sy, t: now }); lastRipple = now; }
+                        if (!inside && now - lastAmbient > 3200) {
+                            ripples.push({ x: Math.random() * sw, y: Math.random() * sh, t: now, soft: true });
+                            lastAmbient = now;
+                        }
+                    }
+                    ripples = ripples.filter((r) => now - r.t < 2600);
+                    const w = Math.sqrt(3) * HEX, h = 1.5 * HEX;
+                    for (let row = -1; row * h < sh + HEX; row++) {
+                        for (let col = -1; col * w < sw + w; col++) {
+                            const x = col * w + (row % 2 ? w / 2 : 0);
+                            const y = row * h;
+                            let glow = 0;
+                            if (inside) {
+                                const d = Math.hypot(x - sx, y - sy);
+                                if (d < 180) glow = 1 - d / 180;
+                            }
+                            ripples.forEach((r) => {
+                                const age = (now - r.t) / 2600;
+                                const radius = age * 520;
+                                const k = 1 - Math.abs(Math.hypot(x - r.x, y - r.y) - radius) / 45;
+                                if (k > 0) glow = Math.max(glow, k * (1 - age) * (r.soft ? 0.45 : 0.9));
+                            });
+                            hexPath(x, y, HEX - 2);
+                            if (glow > 0.02) {
+                                sctx.fillStyle = `rgba(${CORAL}, ${(glow * 0.07).toFixed(3)})`;
+                                sctx.fill();
+                                sctx.strokeStyle = `rgba(${CORAL}, ${(0.08 + glow * 0.4).toFixed(3)})`;
+                            } else {
+                                sctx.strokeStyle = `rgba(${GREEN}, 0.075)`;
+                            }
+                            sctx.lineWidth = 1;
+                            sctx.stroke();
+                        }
+                    }
+                    if (live && shown) sraf = window.requestAnimationFrame(drawShield);
+                };
+                const wakeShield = () => { if (!sraf) sraf = window.requestAnimationFrame(drawShield); };
+
+                sizeShield();
+                wakeShield();
+                if ("ResizeObserver" in window) new ResizeObserver(() => { sizeShield(); wakeShield(); }).observe(shieldHost);
+                if (hasIntersectionObserver) {
+                    new IntersectionObserver(([entry]) => { shown = entry.isIntersecting; if (shown) wakeShield(); }).observe(shieldHost);
+                } else {
+                    shown = true;
+                }
+                if (finePointer && !motionReduced) {
+                    shieldHost.addEventListener("pointermove", (event) => {
+                        if (event.pointerType !== "mouse") return;
+                        const box = shieldHost.getBoundingClientRect();
+                        sx = event.clientX - box.left;
+                        sy = event.clientY - box.top;
+                        inside = true;
+                        wakeShield();
+                    });
+                    shieldHost.addEventListener("pointerleave", () => { inside = false; });
+                }
+            }
+
             const contactForm = document.querySelector(".contact-form");
             if (contactForm && finePointer && !motionReduced) {
                 contactForm.addEventListener("pointermove", (event) => {
