@@ -154,10 +154,10 @@
 
         <section class="contact-section container" id="contact" aria-labelledby="contact-title">
             <div class="contact-copy">
-                <p class="eyebrow">Have a question?</p>
-            <h2 id="contact-title">Let’s start a conversation.</h2>
-                <p>Send a message about a project, a class idea, or just to say hello.</p>
-                <a class="text-link" href="mailto:sadmanmorshed401@gmail.com">Email me directly <span aria-hidden="true">&#8594;</span></a>
+                <p class="eyebrow ct-letters">Have a question?</p>
+            <h2 id="contact-title" class="ct-heading"><span class="ct-typing" aria-hidden="true"><i></i><i></i><i></i></span><span class="ct-msg">Let’s start a conversation.</span></h2>
+                <p class="ct-glass">Send a message about a project, a class idea, or just to say hello.</p>
+                <a class="text-link ct-magnet" href="mailto:sadmanmorshed401@gmail.com">Email me directly <span aria-hidden="true">&#8594;</span></a>
                 <nav class="social-links" aria-label="Social links">
                     <a class="social-card" href="https://www.facebook.com/sadman.morshed.377408" target="_blank" rel="noreferrer" aria-label="Facebook">
                         <img src="images/facebook.png" alt="">
@@ -177,7 +177,7 @@
                     </a>
                 </nav>
             </div>
-            <form class="contact-form" action="#contact" method="post">
+            <form class="contact-form ct-frost" action="#contact" method="post">
                 <div class="form-row">
                     <div class="form-field">
                         <label for="name">Name</label>
@@ -271,7 +271,7 @@
             }
 
             const revealTargets = [
-                ...document.querySelectorAll(".contact-copy, .contact-form, .site-footer")
+                ...document.querySelectorAll(".site-footer")
             ];
             revealTargets.forEach((element) => element.classList.add("reveal"));
 
@@ -290,7 +290,61 @@
                 element.dataset.splitText = "true";
             };
 
-            document.querySelectorAll(".contact-copy h2").forEach(splitText);
+            // CONTACT ENTRANCE
+            const contactBlock = document.querySelector(".contact-section");
+            if (contactBlock) {
+                // "Have a question?": letters arrive from the left, last character first
+                const ask = contactBlock.querySelector(".ct-letters");
+                if (ask) {
+                    const text = ask.textContent.trim();
+                    ask.setAttribute("aria-label", text);
+                    ask.textContent = "";
+                    const chars = [];
+                    text.split(" ").forEach((word, wordIndex) => {
+                        if (wordIndex) ask.append(" ");
+                        const wordSpan = document.createElement("span");
+                        wordSpan.className = "ct-word";
+                        wordSpan.setAttribute("aria-hidden", "true");
+                        [...word].forEach((char) => {
+                            const c = document.createElement("span");
+                            c.className = "ct-char";
+                            c.textContent = char;
+                            wordSpan.append(c);
+                            chars.push(c);
+                        });
+                        ask.append(wordSpan);
+                    });
+                    chars.reverse().forEach((c, index) => c.style.setProperty("--k", index));
+                }
+                contactBlock.querySelectorAll(".social-card").forEach((card, index) => card.style.setProperty("--s", index));
+
+                // "Email me directly": a very slight magnetic pull toward the cursor
+                const emailLink = contactBlock.querySelector(".ct-magnet");
+                if (emailLink && finePointer && !motionReduced) {
+                    window.addEventListener("pointermove", (event) => {
+                        const box = emailLink.getBoundingClientRect();
+                        const dx = event.clientX - (box.left + box.width / 2);
+                        const dy = event.clientY - (box.top + box.height / 2);
+                        const reach = Math.hypot(dx, dy);
+                        const pull = reach < 140 ? (1 - reach / 140) * 0.16 : 0;
+                        emailLink.style.setProperty("--mx", `${(dx * pull).toFixed(1)}px`);
+                        emailLink.style.setProperty("--my", `${(dy * pull).toFixed(1)}px`);
+                    }, { passive: true });
+                }
+
+                if (hasIntersectionObserver && !motionReduced) {
+                    new IntersectionObserver(([entry]) => {
+                        if (entry.intersectionRatio === 0) {
+                            contactBlock.classList.remove("ct-play");
+                        } else if (entry.intersectionRatio >= 0.2 && !contactBlock.classList.contains("ct-play")) {
+                            void contactBlock.offsetWidth;
+                            contactBlock.classList.add("ct-play");
+                        }
+                    }, { threshold: [0, 0.2] }).observe(contactBlock);
+                } else {
+                    contactBlock.classList.add("ct-play");
+                }
+            }
 
             // PROJECTS ENTRANCE
             const projectsBlock = document.querySelector(".projects-section");
