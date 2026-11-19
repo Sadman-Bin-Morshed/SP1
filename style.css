@@ -2351,3 +2351,148 @@ h2 {
     .ct-drape-left { left: -20px; }
     .ct-drape-right { right: -20px; }
 }
+
+
+/* =========================================================
+   PROJECTS: velvet stage curtain (replaces the cream curtain + background lettering)
+   Deep green velvet panels with soft folds and a glowing coral seam cover the project stage.
+   "Small | builds," and "real | lessons." are split across the seam so they read as one phrase.
+   The curtain holds, then slowly parts and gathers at the sides (behind the cards).
+========================================================= */
+.projects-section::before {
+    display: grid;                    /* his BUILD / LEARN / REPEAT watermark is back */
+}
+
+.pj-velvet {
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .carousel-ready .pj-velvet {
+        position: absolute;
+        inset: 0 -6px;
+        z-index: 10;
+        display: block;
+        pointer-events: none;
+    }
+
+    .pj-panel {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        overflow: hidden;
+        background:
+            linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent 22%, transparent 78%, rgba(0, 0, 0, 0.3)),
+            repeating-linear-gradient(90deg,
+                #1f3d35 0px,
+                #2f5d50 16px,
+                #3d7263 26px,
+                #2f5d50 36px,
+                #1f3d35 52px);
+        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .pj-panel-left {
+        left: 0;
+        transform-origin: 0 50%;
+        border-right: 2px solid var(--accent);
+        border-radius: 10px 0 0 10px;
+    }
+
+    .pj-panel-right {
+        right: 0;
+        transform-origin: 100% 50%;
+        border-left: 2px solid var(--accent);
+        border-radius: 0 10px 10px 0;
+    }
+
+    /* the words sit against the seam: left panel right-aligned, right panel left-aligned */
+    .pj-panel-text {
+        position: absolute;
+        top: 50%;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        color: var(--accent-light);
+        font-size: clamp(2.2rem, 5.6vw, 4.6rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+        transform: translateY(-50%);
+        white-space: nowrap;
+    }
+
+    .pj-panel-left .pj-panel-text {
+        right: 14px;
+        align-items: flex-end;
+    }
+
+    .pj-panel-right .pj-panel-text {
+        left: 14px;
+        align-items: flex-start;
+    }
+
+    .pj-warm {
+        color: #f08a68;
+    }
+
+    /* glow along the seam while closed */
+    .pj-velvet::after {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc(50% - 1px);
+        width: 2px;
+        background: var(--accent);
+        box-shadow: 0 0 16px 3px rgba(217, 95, 61, 0.55);
+        content: "";
+        opacity: 0;
+    }
+
+    .projects-section.pj-play .pj-panel {
+        animation: velvetOpen 4.2s both;
+    }
+
+    .projects-section.pj-play .pj-panel-text {
+        animation: velvetWords 4.2s ease both;
+    }
+
+    .projects-section.pj-play .pj-velvet::after {
+        animation: velvetSeam 4.2s ease both;
+    }
+
+    /* when the section has played, the gathered curtains sit behind the cards */
+    .projects-section.pj-play .pj-velvet {
+        animation: velvetBehind 4.2s step-end both;
+    }
+}
+
+@keyframes velvetOpen {
+    0%   { transform: scaleX(1); filter: brightness(0.9); }
+    10%  { transform: scaleX(1); filter: brightness(1); }
+    48%  { transform: scaleX(1); animation-timing-function: cubic-bezier(0.65, 0, 0.25, 1); }
+    100% { transform: scaleX(0.075); filter: brightness(0.92); }
+}
+
+@keyframes velvetWords {
+    0%   { opacity: 0; transform: translateY(-50%) scale(0.96); }
+    14%  { opacity: 1; transform: translateY(-50%) scale(1); }
+    48%  { opacity: 1; }
+    64%  { opacity: 0; }
+    100% { opacity: 0; transform: translateY(-50%); }
+}
+
+@keyframes velvetSeam {
+    0%, 8% { opacity: 0; }
+    20%    { opacity: 1; }
+    46%    { opacity: 1; }
+    54%    { opacity: 0; }
+    100%   { opacity: 0; }
+}
+
+@keyframes velvetBehind {
+    0%   { z-index: 10; }
+    100% { z-index: 0; }
+}
