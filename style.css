@@ -1585,3 +1585,58 @@ h2 {
 @keyframes skPop {
     from { opacity: 0; transform: translateY(70px) scale(0.94); }
 }
+
+
+/* ---------- Skills: bigger wave + readable lettering (update) ---------- */
+/* room above the row so the raised card never touches the heading */
+.skills-grid {
+    padding-top: 28px;
+}
+
+/* the wave: the card you point at rises high, its neighbours rise part-way,
+   the rest dip slightly - moving along the row rolls the crest from card to card */
+.skills-grid:has(.skill-item:hover) .skill-item,
+.skills-grid:has(.skill-item:focus-within) .skill-item {
+    transform: translateY(10px) scale(0.98);
+}
+
+.skills-grid .skill-item:hover + .skill-item,
+.skills-grid .skill-item:has(+ .skill-item:hover),
+.skills-grid .skill-item:focus-within + .skill-item,
+.skills-grid .skill-item:has(+ .skill-item:focus-within) {
+    transform: translateY(-18px) scale(1.01);
+}
+
+.skills-grid:has(.skill-item:hover) .skill-item:hover,
+.skills-grid:has(.skill-item:focus-within) .skill-item:focus-within {
+    z-index: 2;
+    transform: translateY(-52px) scale(1.07);
+    box-shadow: 0 40px 60px rgba(23, 35, 31, 0.24);
+}
+
+.skills-grid .skill-item {
+    transition: transform 650ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 450ms ease;
+}
+
+/* lettering now sits under the cards, larger and readable but still part of the background */
+.sk-bg {
+    position: static;
+    z-index: auto;
+    display: block;
+    margin: 56px 0 0;
+    font-size: clamp(2.6rem, 8vw, 7rem);
+    line-height: 0.95;
+    color: rgba(47, 93, 80, 0.035);
+    -webkit-text-stroke: 1.5px rgba(47, 93, 80, 0.32);
+}
+
+.sk-bg-warm {
+    color: rgba(217, 95, 61, 0.04);
+    -webkit-text-stroke: 1.5px rgba(217, 95, 61, 0.42);
+}
+
+@media (max-width: 760px) {
+    .sk-bg-line {
+        white-space: normal;
+    }
+}
