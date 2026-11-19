@@ -700,9 +700,15 @@
 
             const resetDrag = () => {
                 distance = 0;
-                order[0].style.setProperty("--project-distance", "0px");
+                order[0].style.setProperty("--pd", parseFloat("0px"));
                 updateLayout();
             };
+
+            // Deck switching: the front card swings out to the side, then tucks in behind the stack,
+            // while the card behind rises forward with a soft bounce.
+            const SWING = 380;     // time spent out at the side (ms)
+            const SETTLE = 650;    // time to tuck in / rise up (ms)
+            const swingDistance = (card) => -(card.offsetWidth * 0.95);
 
             const next = () => {
                 if (locked) return;
@@ -710,15 +716,17 @@
                 const top = order.shift();
                 if (!top) return;
                 order.push(top);
-                top.classList.add("project-fly");
-                top.style.setProperty("--project-distance", `-${carousel.clientWidth * 1.25}px`);
-                updateLayout();
+                updateLayout();                                   // the rest move up; the new front rises
+                top.style.zIndex = String(order.length + 1);      // stay in front while swinging out
+                top.style.setProperty("--project-position", 0);
+                top.style.setProperty("--pd", parseFloat(`${swingDistance(top)}px`));
+                top.classList.add("project-swing");
                 window.setTimeout(() => {
-                    top.classList.remove("project-fly");
-                    top.style.setProperty("--project-distance", "0px");
-                    updateLayout();
-                    locked = false;
-                }, reduceMotion ? 0 : 430);
+                    top.classList.remove("project-swing");
+                    top.style.setProperty("--pd", parseFloat("0px"));
+                    updateLayout();                               // now tuck in at the back
+                    window.setTimeout(() => { locked = false; }, reduceMotion ? 0 : SETTLE - 150);
+                }, reduceMotion ? 0 : SWING);
             };
 
             const previous = () => {
@@ -727,16 +735,20 @@
                 const card = order.pop();
                 if (!card) return;
                 order.unshift(card);
-                card.classList.add("project-no-anim");
-                card.style.setProperty("--project-distance", `-${carousel.clientWidth * 1.25}px`);
                 updateLayout();
-                requestAnimationFrame(() => {
-                    card.classList.remove("project-no-anim");
-                    card.style.setProperty("--project-distance", "0px");
-                });
+                card.style.zIndex = "0";                          // slide out from behind the stack...
+                card.style.setProperty("--project-position", 0);
+                card.style.setProperty("--pd", parseFloat(`${swingDistance(card)}px`));
+                card.classList.add("project-swing");
                 window.setTimeout(() => {
-                    locked = false;
-                }, reduceMotion ? 0 : 430);
+                    card.classList.remove("project-swing");
+                    card.style.zIndex = String(order.length + 1); // ...then swing in to the front
+                    card.style.setProperty("--pd", parseFloat("0px"));
+                    window.setTimeout(() => {
+                        updateLayout();
+                        locked = false;
+                    }, reduceMotion ? 0 : SETTLE - 150);
+                }, reduceMotion ? 0 : SWING);
             };
 
             carousel.classList.add("carousel-ready");
@@ -755,7 +767,7 @@
             carousel.addEventListener("pointermove", (event) => {
                 if (!dragging) return;
                 distance = event.clientX - startX;
-                order[0].style.setProperty("--project-distance", `${distance}px`);
+                order[0].style.setProperty("--pd", parseFloat(`${distance}px`));
                 updateLayout();
             });
 
