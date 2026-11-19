@@ -1640,3 +1640,248 @@ h2 {
         white-space: normal;
     }
 }
+
+
+/* =========================================================
+   PROJECTS ANIMATIONS (added)
+   - "Selected practice work": typed out with a blinking coral caret that fades at the end
+   - "Projects I have explored": every letter starts folded down and flips up, one at a time
+   - "Small builds, real lessons.": soft glow + magnetic pull toward the cursor
+   - cards: small and centred showing only the project name; hover opens the full card
+   Plays when the script adds .pj-play (and replays when you scroll back).
+========================================================= */
+.pj-word,
+.pj-key,
+.pj-letter,
+.pj-space {
+    display: inline-block;
+}
+
+.pj-word {
+    white-space: nowrap;
+}
+
+.pj-flip {
+    perspective: 600px;
+}
+
+.pj-caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    margin-left: 3px;
+    vertical-align: -0.2em;
+    background: var(--accent);
+    opacity: 0;
+}
+
+/* tagline: gentle glow, magnetic pull */
+.pj-magnet {
+    display: inline-block;
+    transform: translate(var(--mx, 0px), var(--my, 0px));
+    transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1), color 300ms ease;
+    animation: pjGlow 3.2s ease-in-out infinite;
+}
+
+.pj-magnet.is-pulled {
+    color: var(--accent);
+}
+
+@keyframes pjGlow {
+    0%, 100% { text-shadow: 0 0 0 rgba(217, 95, 61, 0); }
+    50%      { text-shadow: 0 0 14px rgba(217, 95, 61, 0.45), 0 0 2px rgba(217, 95, 61, 0.25); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .projects-section:not(.pj-play) .pj-key,
+    .js-enabled .projects-section:not(.pj-play) .pj-letter,
+    .js-enabled .projects-section:not(.pj-play) .pj-magnet,
+    .js-enabled .projects-section:not(.pj-play) .project-card {
+        opacity: 0;
+    }
+
+    .projects-heading {
+        animation: none;
+    }
+
+    /* typewriter */
+    .js-enabled .projects-section:not(.pj-play) .pj-key {
+        max-width: 0;
+        overflow: hidden;
+    }
+
+    .projects-section.pj-play .pj-key {
+        animation: pjKey 1ms linear both;
+        animation-delay: calc(0.15s + var(--i, 0) * 55ms);
+    }
+
+    .projects-section.pj-play .pj-caret {
+        animation:
+            pjBlink 0.7s steps(1) 0.1s 4,
+            pjCaretOut 0.4s ease calc(0.3s + var(--keys, 20) * 55ms) forwards;
+    }
+
+    /* letters fold up, one at a time */
+    .projects-section.pj-play .pj-letter {
+        transform-origin: 50% 100%;
+        animation: pjFold 0.55s cubic-bezier(0.34, 1.45, 0.64, 1) both;
+        animation-delay: calc(0.5s + var(--i, 0) * 60ms);
+    }
+
+    .projects-section.pj-play .pj-magnet {
+        animation:
+            pjFade 0.9s ease 1.6s both,
+            pjGlow 3.2s ease-in-out 2.5s infinite;
+    }
+
+    /* cards drop in */
+    .projects-section.pj-play .project-card {
+        animation: pjCardIn 0.8s var(--ease) backwards;
+        animation-delay: calc(1.3s + var(--card, 0) * 0.12s);
+    }
+}
+
+@keyframes pjKey {
+    from { max-width: 0;   opacity: 0; }
+    to   { max-width: 2em; opacity: 1; }
+}
+
+@keyframes pjBlink {
+    0%   { opacity: 1; }
+    50%  { opacity: 0; }
+}
+
+@keyframes pjCaretOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+@keyframes pjFold {
+    0%   { opacity: 0; transform: rotateX(-100deg); }
+    40%  { opacity: 1; }
+    100% { opacity: 1; transform: rotateX(0deg); }
+}
+
+@keyframes pjFade {
+    from { opacity: 0; filter: blur(6px); }
+    to   { opacity: 1; filter: blur(0); }
+}
+
+@keyframes pjCardIn {
+    from { opacity: 0; transform: translateY(60px) scale(0.92); }
+}
+
+/* ---------- small card -> big card on hover ---------- */
+.carousel-ready .project-card {
+    inset: auto;
+    top: calc(50% - 80px);
+    left: calc(50% - 170px);
+    width: 340px;
+    height: 160px;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition:
+        transform 430ms var(--ease),
+        opacity 430ms ease,
+        top 600ms var(--ease),
+        left 600ms var(--ease),
+        width 600ms var(--ease),
+        height 600ms var(--ease),
+        box-shadow 300ms ease,
+        border-color 300ms ease;
+}
+
+/* compact: only the project name */
+.carousel-ready .project-card h3 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.7rem;
+    transition: font-size 600ms var(--ease);
+}
+
+.carousel-ready .project-card .project-topline,
+.carousel-ready .project-card p,
+.carousel-ready .project-card .tag-list,
+.carousel-ready .project-card .project-meta {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 250ms ease, visibility 0s linear 250ms;
+}
+
+.carousel-ready .project-card .project-topline {
+    top: 28px;
+}
+
+.carousel-ready .project-card::before {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 16px;
+    color: var(--green);
+    content: "Hover to open \2197";
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    opacity: 0.55;
+    text-align: center;
+    text-transform: uppercase;
+    transition: opacity 250ms ease;
+}
+
+/* open: full size, everything visible */
+.carousel-ready .project-card[aria-hidden="false"]:hover,
+.carousel-ready .project-card[aria-hidden="false"]:focus-visible,
+.carousel-ready .project-card[aria-hidden="false"].is-open {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    justify-content: flex-start;
+}
+
+.carousel-ready .project-card[aria-hidden="false"]:hover h3,
+.carousel-ready .project-card[aria-hidden="false"]:focus-visible h3,
+.carousel-ready .project-card[aria-hidden="false"].is-open h3 {
+    margin: 74px 0 14px;
+    text-align: left;
+    font-size: 2rem;
+}
+
+.carousel-ready .project-card[aria-hidden="false"]:hover::before,
+.carousel-ready .project-card[aria-hidden="false"]:focus-visible::before,
+.carousel-ready .project-card[aria-hidden="false"].is-open::before {
+    opacity: 0;
+}
+
+.carousel-ready .project-card[aria-hidden="false"]:hover > *,
+.carousel-ready .project-card[aria-hidden="false"]:focus-visible > *,
+.carousel-ready .project-card[aria-hidden="false"].is-open > * {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 450ms ease 300ms, visibility 0s linear 0s;
+}
+
+.carousel-ready .project-card[aria-hidden="false"]:hover .project-topline,
+.carousel-ready .project-card[aria-hidden="false"]:focus-visible .project-topline,
+.carousel-ready .project-card[aria-hidden="false"].is-open .project-topline {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 28px;
+}
+
+@media (max-width: 760px) {
+    .carousel-ready .project-card {
+        left: calc(50% - 140px);
+        width: 280px;
+    }
+}
