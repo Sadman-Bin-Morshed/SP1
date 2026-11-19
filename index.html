@@ -84,12 +84,12 @@
         </section>
 
         <section class="projects-section container" id="projects" aria-labelledby="projects-title">
-            <div class="section-heading">
+            <div class="section-heading projects-heading">
                 <div>
-                    <p class="eyebrow">Selected practice work</p>
-                    <h2 id="projects-title">Projects I have explored</h2>
+                    <p class="eyebrow pj-type">Selected practice work</p>
+                    <h2 id="projects-title" class="pj-flip">Projects I have explored</h2>
                 </div>
-                <p class="heading-note">Small builds, real lessons.</p>
+                <p class="heading-note pj-magnet">Small builds, real lessons.</p>
             </div>
             <div class="projects-grid" role="region" aria-roledescription="carousel"
                 aria-label="Projects. Drag, swipe, scroll, or use the arrow keys to browse projects." tabindex="0">
@@ -271,7 +271,7 @@
             }
 
             const revealTargets = [
-                ...document.querySelectorAll(".projects-section .section-heading, .contact-copy, .contact-form, .site-footer")
+                ...document.querySelectorAll(".contact-copy, .contact-form, .site-footer")
             ];
             revealTargets.forEach((element) => element.classList.add("reveal"));
 
@@ -290,7 +290,104 @@
                 element.dataset.splitText = "true";
             };
 
-            document.querySelectorAll(".projects-section .section-heading h2, .contact-copy h2").forEach(splitText);
+            document.querySelectorAll(".contact-copy h2").forEach(splitText);
+
+            // PROJECTS ENTRANCE
+            const projectsBlock = document.querySelector(".projects-section");
+            if (projectsBlock) {
+                const splitLetters = (element, className) => {
+                    if (!element) return [];
+                    const text = element.textContent.trim();
+                    element.setAttribute("aria-label", text);
+                    element.textContent = "";
+                    const letters = [];
+                    text.split(" ").forEach((word, wordIndex) => {
+                        if (wordIndex) {
+                            const space = document.createElement("span");
+                            space.className = `${className} pj-space`;
+                            space.setAttribute("aria-hidden", "true");
+                            space.textContent = "\u00a0";
+                            element.append(space);
+                            letters.push(space);
+                        }
+                        const wordSpan = document.createElement("span");
+                        wordSpan.className = "pj-word";
+                        wordSpan.setAttribute("aria-hidden", "true");
+                        [...word].forEach((char) => {
+                            const letter = document.createElement("span");
+                            letter.className = className;
+                            letter.textContent = char;
+                            wordSpan.append(letter);
+                            letters.push(letter);
+                        });
+                        element.append(wordSpan);
+                    });
+                    letters.forEach((letter, index) => letter.style.setProperty("--i", index));
+                    return letters;
+                };
+
+                // "Selected practice work": typed out with a blinking caret
+                const typeLine = projectsBlock.querySelector(".pj-type");
+                const typed = splitLetters(typeLine, "pj-key");
+                if (typeLine) {
+                    const caret = document.createElement("span");
+                    caret.className = "pj-caret";
+                    caret.setAttribute("aria-hidden", "true");
+                    typeLine.append(caret);
+                    typeLine.style.setProperty("--keys", typed.length);
+                }
+
+                // "Projects I have explored": every letter folded down, flipping up one at a time
+                const flipLetters = splitLetters(projectsBlock.querySelector(".pj-flip"), "pj-letter");
+                flipLetters.filter((l) => l.classList.contains("pj-space")).forEach((l) => l.classList.remove("pj-letter"));
+
+                // "Small builds, real lessons.": glows, and is pulled toward the cursor
+                const magnet = projectsBlock.querySelector(".pj-magnet");
+                if (magnet && finePointer && !motionReduced) {
+                    window.addEventListener("pointermove", (event) => {
+                        const box = magnet.getBoundingClientRect();
+                        const dx = event.clientX - (box.left + box.width / 2);
+                        const dy = event.clientY - (box.top + box.height / 2);
+                        const reach = Math.hypot(dx, dy);
+                        if (reach < 170) {
+                            const pull = (1 - reach / 170) * 0.35;
+                            magnet.style.setProperty("--mx", `${(dx * pull).toFixed(1)}px`);
+                            magnet.style.setProperty("--my", `${(dy * pull).toFixed(1)}px`);
+                            magnet.classList.add("is-pulled");
+                        } else if (magnet.classList.contains("is-pulled")) {
+                            magnet.style.setProperty("--mx", "0px");
+                            magnet.style.setProperty("--my", "0px");
+                            magnet.classList.remove("is-pulled");
+                        }
+                    }, { passive: true });
+                }
+
+                // cards: index for the entrance stagger; on touch, first tap opens the card, second tap follows the link
+                projectsBlock.querySelectorAll(".project-card").forEach((card, index) => {
+                    card.style.setProperty("--card", index);
+                    card.addEventListener("click", (event) => {
+                        if (finePointer) return;
+                        if (!card.classList.contains("is-open")) {
+                            event.preventDefault();
+                            projectsBlock.querySelectorAll(".project-card.is-open").forEach((c) => c.classList.remove("is-open"));
+                            card.classList.add("is-open");
+                        }
+                    });
+                });
+
+                if (hasIntersectionObserver && !motionReduced) {
+                    new IntersectionObserver(([entry]) => {
+                        if (entry.intersectionRatio === 0) {
+                            projectsBlock.classList.remove("pj-play");
+                        } else if (entry.intersectionRatio >= 0.15 && !projectsBlock.classList.contains("pj-play")) {
+                            void projectsBlock.offsetWidth;
+                            projectsBlock.classList.add("pj-play");
+                        }
+                    }, { threshold: [0, 0.15] }).observe(projectsBlock);
+                } else {
+                    projectsBlock.classList.add("pj-play");
+                }
+            }
 
             // SKILLS ENTRANCE: plays when the section comes into view, replays when you come back
             const skillsBlock = document.querySelector(".skills-section");
