@@ -1290,3 +1290,1209 @@ h2 {
         margin-top: 18px;
     }
 }
+
+
+/* =========================================================
+   HERO ANIMATIONS (added)
+   1. "Software Development-1": each piece starts upside down and flips upright, slowly
+   2. "Hello, I'm Sadman.": pieces slide in from the left - "Sadman." first, then "I'm", ",", "Hello"
+   3. Intro paragraph: liquid glass card that appears out of nowhere
+   4. Credential line: letters fly in from the right, last letter first
+   5. "Explore my work": puffs in like a cloud
+   6. Profile picture lifts on hover
+   Entrances start when the script adds .hero-play (right after the loader).
+========================================================= */
+.hx-flip,
+.hx-left,
+.hx-word,
+.hx-letter {
+    display: inline-block;
+}
+
+.hero-eyebrow {
+    perspective: 500px;
+}
+
+.hero .hero-line {
+    overflow: visible;
+}
+
+.hx-word {
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .hero:not(.hero-play) .hx-flip,
+    .js-enabled .hero:not(.hero-play) .hx-left,
+    .js-enabled .hero:not(.hero-play) .hx-letter,
+    .js-enabled .hero:not(.hero-play) .hero-glass,
+    .js-enabled .hero:not(.hero-play) .hero-intro .button {
+        opacity: 0;
+    }
+
+    /* 1. upside down -> upright, one piece at a time */
+    .hero.hero-play .hx-flip {
+        transform-origin: 50% 60%;
+        animation: hxFlip 1s var(--ease) both;
+    }
+    .hero.hero-play .hx-flip:nth-child(1) { animation-delay: 0s; }
+    .hero.hero-play .hx-flip:nth-child(2) { animation-delay: 0.45s; }
+    .hero.hero-play .hx-flip:nth-child(3) { animation-delay: 0.9s; }
+    .hero.hero-play .hx-flip:nth-child(4) { animation-delay: 1.3s; }
+
+    /* 2. from the left, "Sadman." first */
+    .hero.hero-play .hx-left {
+        animation: hxFromLeft 0.9s var(--ease) both;
+        animation-delay: calc(0.55s + var(--o, 0) * 0.22s);
+    }
+
+    /* 3. glass card out of nowhere */
+    .hero.hero-play .hero-glass {
+        animation: hxNowhere 1.1s ease-out 1.5s both;
+    }
+
+    /* 4. credential letters from the right, last letter first */
+    .hero.hero-play .hx-letter {
+        animation: hxFromRight 0.7s var(--ease) both;
+        animation-delay: calc(2s + var(--l, 0) * 32ms);
+    }
+
+    /* 5. button puffs in like a cloud */
+    .hero.hero-play .hero-intro .button {
+        animation: hxCloud 1.2s var(--ease) 3.3s both;
+    }
+}
+
+@keyframes hxFlip {
+    0%   { opacity: 0; transform: rotateX(180deg); }
+    30%  { opacity: 1; }
+    100% { opacity: 1; transform: rotateX(0deg); }
+}
+
+@keyframes hxFromLeft {
+    from { opacity: 0; transform: translateX(-38vw); filter: blur(4px); }
+    to   { opacity: 1; transform: translateX(0);     filter: blur(0); }
+}
+
+@keyframes hxFromRight {
+    from { opacity: 0; transform: translateX(26vw); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes hxNowhere {
+    0%   { opacity: 0;    filter: blur(14px); transform: scale(1.08); }
+    40%  { opacity: 0.7;  filter: blur(4px); }
+    52%  { opacity: 0.25; }
+    72%  { opacity: 1;    filter: blur(0);    transform: scale(1); }
+    100% { opacity: 1;    filter: blur(0);    transform: none; }
+}
+
+@keyframes hxCloud {
+    0%   { opacity: 0; transform: scale(0.55); filter: blur(16px); box-shadow: 0 0 0 0 rgba(243, 199, 167, 0); }
+    55%  { opacity: 1; transform: scale(1.05); filter: blur(2px);  box-shadow: 0 0 46px 14px rgba(243, 199, 167, 0.28); }
+    100% { opacity: 1; transform: scale(1);    filter: blur(0);    box-shadow: 0 0 0 0 rgba(243, 199, 167, 0); }
+}
+
+/* 3. liquid glass for the intro paragraph (same colours, deeper glass) */
+.hero-glass {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.025) 60%, rgba(217, 95, 61, 0.05));
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.24),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+        inset 0 0 28px rgba(255, 255, 255, 0.03),
+        0 18px 42px rgba(0, 0, 0, 0.28);
+}
+
+.hero-glass::before {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(115deg, rgba(255, 255, 255, 0.12) 0%, transparent 40%, transparent 72%, rgba(243, 199, 167, 0.08) 100%);
+    content: "";
+    pointer-events: none;
+}
+
+/* 6. profile picture lifts on hover */
+.hero-photo-frame:hover .hero-photo {
+    transform: translateY(-10px) scale(1.06);
+    box-shadow: 0 22px 40px rgba(0, 0, 0, 0.45), 0 0 34px rgba(243, 199, 167, 0.25);
+}
+
+.hero-photo-orbit {
+    transition: opacity 500ms ease, transform 700ms var(--ease);
+}
+
+.hero-photo-frame:hover .hero-photo-orbit {
+    opacity: 0.9;
+    transform: translateY(-10px) rotate(-8deg) scaleY(0.32);
+}
+
+
+/* =========================================================
+   SKILLS ANIMATIONS (added)
+   - "What I have learned": What from the left, I from below, have from above,
+     learned from the right; they meet in one line
+   - "Skills I have acquired": a magical swish reveals it
+   - "Foundations first. Progress always.": big background lettering, appears out of nowhere
+   - cards pop up from the bottom one by one; hovering makes a wave
+   Plays when the script adds .sk-play (and replays when you scroll back).
+========================================================= */
+.sk-w {
+    display: inline-block;
+}
+
+.skills-heading {
+    position: relative;
+}
+
+/* big background lettering, same outline style as the "BUILD LEARN REPEAT" watermark */
+.sk-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    color: transparent;
+    font-size: clamp(3.2rem, 9.5vw, 8.5rem);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.05em;
+    text-align: center;
+    -webkit-text-stroke: 1px rgba(47, 93, 80, 0.13);
+    pointer-events: none;
+    user-select: none;
+}
+
+.sk-bg-line {
+    display: block;
+    white-space: nowrap;
+}
+
+.sk-bg-warm {
+    -webkit-text-stroke-color: rgba(217, 95, 61, 0.16);
+}
+
+/* hover wave: the card you point at rises, its neighbours lift a little, the rest settle */
+.skill-item {
+    transition: transform 520ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 400ms ease;
+}
+
+.skill-item:hover,
+.skill-item:focus-within {
+    transform: translateY(-16px);
+    box-shadow: 0 26px 42px rgba(23, 35, 31, 0.2);
+}
+
+.skill-item:hover + .skill-item,
+.skill-item:has(+ .skill-item:hover) {
+    transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .skills-section:not(.sk-play) .sk-w,
+    .js-enabled .skills-section:not(.sk-play) .sk-swish,
+    .js-enabled .skills-section:not(.sk-play) .sk-bg,
+    .js-enabled .skills-section:not(.sk-play) .skill-item {
+        opacity: 0;
+    }
+
+    /* replace the page-load rise with our own entrance */
+    .skills-heading,
+    .skill-item {
+        animation: none;
+    }
+
+    /* eyebrow: four directions, meeting in one line */
+    .skills-section.sk-play .sk-from-left  { animation: skLeft 1s var(--ease) 0s both; }
+    .skills-section.sk-play .sk-from-below { animation: skBelow 1s var(--ease) 0.12s both; }
+    .skills-section.sk-play .sk-from-above { animation: skAbove 1s var(--ease) 0.24s both; }
+    .skills-section.sk-play .sk-from-right { animation: skRight 1s var(--ease) 0.36s both; }
+
+    /* title: magical swish - a soft-edged reveal sweeps across with a coral streak ahead of it */
+    .sk-swish {
+        position: relative;
+        display: inline-block;
+    }
+
+    .skills-section.sk-play .sk-swish {
+        -webkit-mask-image: linear-gradient(100deg, #000 0%, #000 44%, transparent 56%, transparent 100%);
+        mask-image: linear-gradient(100deg, #000 0%, #000 44%, transparent 56%, transparent 100%);
+        -webkit-mask-size: 260% 100%;
+        mask-size: 260% 100%;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        animation: skSwishReveal 1.25s cubic-bezier(0.6, 0, 0.2, 1) 0.55s both;
+    }
+
+    .skills-section.sk-play .sk-swish::after {
+        position: absolute;
+        top: -12%;
+        bottom: -12%;
+        left: 0;
+        width: 22%;
+        border-radius: 50%;
+        background: linear-gradient(90deg, transparent, rgba(243, 199, 167, 0.85), rgba(217, 95, 61, 0.55), transparent);
+        content: "";
+        filter: blur(8px);
+        transform: skewX(-22deg);
+        pointer-events: none;
+        animation: skSwishStreak 1.25s cubic-bezier(0.6, 0, 0.2, 1) 0.55s both;
+    }
+
+    /* background lettering appears out of nowhere */
+    .skills-section.sk-play .sk-bg {
+        animation: skNowhere 1.6s ease-out 0.9s both;
+    }
+
+    /* cards pop up from the bottom, one after another */
+    .skills-section.sk-play .skill-item {
+        animation: skPop 0.85s cubic-bezier(0.34, 1.4, 0.64, 1) backwards;
+        animation-delay: calc(1.1s + var(--card, 0) * 0.16s);
+    }
+}
+
+@keyframes skLeft  { from { opacity: 0; transform: translateX(-40vw); } to { opacity: 1; transform: none; } }
+@keyframes skRight { from { opacity: 0; transform: translateX(40vw); }  to { opacity: 1; transform: none; } }
+@keyframes skBelow { from { opacity: 0; transform: translateY(60px); }  to { opacity: 1; transform: none; } }
+@keyframes skAbove { from { opacity: 0; transform: translateY(-60px); } to { opacity: 1; transform: none; } }
+
+@keyframes skSwishReveal {
+    from { opacity: 1; -webkit-mask-position: 100% 0; mask-position: 100% 0; letter-spacing: 0.04em; }
+    to   { opacity: 1; -webkit-mask-position: 0% 0;   mask-position: 0% 0;   letter-spacing: normal; }
+}
+
+@keyframes skSwishStreak {
+    0%   { opacity: 0;   left: -20%; }
+    15%  { opacity: 1; }
+    80%  { opacity: 0.9; }
+    100% { opacity: 0;   left: 100%; }
+}
+
+@keyframes skNowhere {
+    0%   { opacity: 0;   filter: blur(16px); transform: scale(1.06); }
+    40%  { opacity: 0.7; filter: blur(5px); }
+    52%  { opacity: 0.2; }
+    72%  { opacity: 1;   filter: blur(0);    transform: scale(1); }
+    100% { opacity: 1;   filter: blur(0);    transform: none; }
+}
+
+@keyframes skPop {
+    from { opacity: 0; transform: translateY(70px) scale(0.94); }
+}
+
+
+/* ---------- Skills: bigger wave + readable lettering (update) ---------- */
+/* room above the row so the raised card never touches the heading */
+.skills-grid {
+    padding-top: 28px;
+}
+
+/* the wave: the card you point at rises high, its neighbours rise part-way,
+   the rest dip slightly - moving along the row rolls the crest from card to card */
+.skills-grid:has(.skill-item:hover) .skill-item,
+.skills-grid:has(.skill-item:focus-within) .skill-item {
+    transform: translateY(10px) scale(0.98);
+}
+
+.skills-grid .skill-item:hover + .skill-item,
+.skills-grid .skill-item:has(+ .skill-item:hover),
+.skills-grid .skill-item:focus-within + .skill-item,
+.skills-grid .skill-item:has(+ .skill-item:focus-within) {
+    transform: translateY(-18px) scale(1.01);
+}
+
+.skills-grid:has(.skill-item:hover) .skill-item:hover,
+.skills-grid:has(.skill-item:focus-within) .skill-item:focus-within {
+    z-index: 2;
+    transform: translateY(-52px) scale(1.07);
+    box-shadow: 0 40px 60px rgba(23, 35, 31, 0.24);
+}
+
+.skills-grid .skill-item {
+    transition: transform 650ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 450ms ease;
+}
+
+/* lettering now sits under the cards, larger and readable but still part of the background */
+.sk-bg {
+    position: static;
+    z-index: auto;
+    display: block;
+    margin: 56px 0 0;
+    font-size: clamp(2.6rem, 8vw, 7rem);
+    line-height: 0.95;
+    color: rgba(47, 93, 80, 0.035);
+    -webkit-text-stroke: 1.5px rgba(47, 93, 80, 0.32);
+}
+
+.sk-bg-warm {
+    color: rgba(217, 95, 61, 0.04);
+    -webkit-text-stroke: 1.5px rgba(217, 95, 61, 0.42);
+}
+
+@media (max-width: 760px) {
+    .sk-bg-line {
+        white-space: normal;
+    }
+}
+
+
+/* =========================================================
+   PROJECTS ANIMATIONS (added)
+   - "Selected practice work": typed out with a blinking coral caret that fades at the end
+   - "Projects I have explored": every letter starts folded down and flips up, one at a time
+   - "Small builds, real lessons.": soft glow + magnetic pull toward the cursor
+   - cards: small and centred showing only the project name; hover opens the full card
+   Plays when the script adds .pj-play (and replays when you scroll back).
+========================================================= */
+.pj-word,
+.pj-key,
+.pj-letter,
+.pj-space {
+    display: inline-block;
+}
+
+.pj-word {
+    white-space: nowrap;
+}
+
+.pj-flip {
+    perspective: 600px;
+}
+
+.pj-caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    margin-left: 3px;
+    vertical-align: -0.2em;
+    background: var(--accent);
+    opacity: 0;
+}
+
+/* tagline: gentle glow, magnetic pull */
+.pj-magnet {
+    display: inline-block;
+    transform: translate(var(--mx, 0px), var(--my, 0px));
+    transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1), color 300ms ease;
+    animation: pjGlow 3.2s ease-in-out infinite;
+}
+
+.pj-magnet.is-pulled {
+    color: var(--accent);
+}
+
+@keyframes pjGlow {
+    0%, 100% { text-shadow: 0 0 0 rgba(217, 95, 61, 0); }
+    50%      { text-shadow: 0 0 14px rgba(217, 95, 61, 0.45), 0 0 2px rgba(217, 95, 61, 0.25); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .projects-section:not(.pj-play) .pj-key,
+    .js-enabled .projects-section:not(.pj-play) .pj-letter,
+    .js-enabled .projects-section:not(.pj-play) .pj-magnet,
+    .js-enabled .projects-section:not(.pj-play) .project-card {
+        opacity: 0;
+    }
+
+    .projects-heading {
+        animation: none;
+    }
+
+    /* typewriter */
+    .js-enabled .projects-section:not(.pj-play) .pj-key {
+        max-width: 0;
+        overflow: hidden;
+    }
+
+    .projects-section.pj-play .pj-key {
+        animation: pjKey 1ms linear both;
+        animation-delay: calc(0.15s + var(--i, 0) * 55ms);
+    }
+
+    .projects-section.pj-play .pj-caret {
+        animation:
+            pjBlink 0.7s steps(1) 0.1s 4,
+            pjCaretOut 0.4s ease calc(0.3s + var(--keys, 20) * 55ms) forwards;
+    }
+
+    /* letters fold up, one at a time */
+    .projects-section.pj-play .pj-letter {
+        transform-origin: 50% 100%;
+        animation: pjFold 0.55s cubic-bezier(0.34, 1.45, 0.64, 1) both;
+        animation-delay: calc(0.5s + var(--i, 0) * 60ms);
+    }
+
+    .projects-section.pj-play .pj-magnet {
+        animation:
+            pjFade 0.9s ease 1.6s both,
+            pjGlow 3.2s ease-in-out 2.5s infinite;
+    }
+
+    /* cards drop in */
+    .projects-section.pj-play .project-card {
+        animation: pjCardIn 0.8s var(--ease) backwards;
+        animation-delay: calc(1.3s + var(--card, 0) * 0.12s);
+    }
+}
+
+@keyframes pjKey {
+    from { max-width: 0;   opacity: 0; }
+    to   { max-width: 2em; opacity: 1; }
+}
+
+@keyframes pjBlink {
+    0%   { opacity: 1; }
+    50%  { opacity: 0; }
+}
+
+@keyframes pjCaretOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+@keyframes pjFold {
+    0%   { opacity: 0; transform: rotateX(-100deg); }
+    40%  { opacity: 1; }
+    100% { opacity: 1; transform: rotateX(0deg); }
+}
+
+@keyframes pjFade {
+    from { opacity: 0; filter: blur(6px); }
+    to   { opacity: 1; filter: blur(0); }
+}
+
+@keyframes pjCardIn {
+    from { opacity: 0; transform: translateY(60px) scale(0.92); }
+}
+
+/* ---------- small card -> big card on hover ---------- */
+.carousel-ready .project-card {
+    inset: auto;
+    top: calc(50% - 80px);
+    left: calc(50% - 170px);
+    width: 340px;
+    height: 160px;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition:
+        transform 430ms var(--ease),
+        opacity 430ms ease,
+        top 600ms var(--ease),
+        left 600ms var(--ease),
+        width 600ms var(--ease),
+        height 600ms var(--ease),
+        box-shadow 300ms ease,
+        border-color 300ms ease;
+}
+
+/* compact: only the project name */
+.carousel-ready .project-card h3 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.7rem;
+    transition: font-size 600ms var(--ease);
+}
+
+.carousel-ready .project-card .project-topline,
+.carousel-ready .project-card p,
+.carousel-ready .project-card .tag-list,
+.carousel-ready .project-card .project-meta {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 250ms ease, visibility 0s linear 250ms;
+}
+
+.carousel-ready .project-card .project-topline {
+    top: 28px;
+}
+
+.carousel-ready .project-card::before {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 16px;
+    color: var(--green);
+    content: "Hover to open \2197";
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    opacity: 0.55;
+    text-align: center;
+    text-transform: uppercase;
+    transition: opacity 250ms ease;
+}
+
+/* open: full size, everything visible */
+.carousel-ready .project-card[aria-hidden="false"]:hover,
+.carousel-ready .project-card[aria-hidden="false"]:focus-visible,
+.carousel-ready .project-card[aria-hidden="false"].is-open {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    justify-content: flex-start;
+}
+
+.carousel-ready .project-card[aria-hidden="false"]:hover h3,
+.carousel-ready .project-card[aria-hidden="false"]:focus-visible h3,
+.carousel-ready .project-card[aria-hidden="false"].is-open h3 {
+    margin: 74px 0 14px;
+    text-align: left;
+    font-size: 2rem;
+}
+
+.carousel-ready .project-card[aria-hidden="false"]:hover::before,
+.carousel-ready .project-card[aria-hidden="false"]:focus-visible::before,
+.carousel-ready .project-card[aria-hidden="false"].is-open::before {
+    opacity: 0;
+}
+
+.carousel-ready .project-card[aria-hidden="false"]:hover > *,
+.carousel-ready .project-card[aria-hidden="false"]:focus-visible > *,
+.carousel-ready .project-card[aria-hidden="false"].is-open > * {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 450ms ease 300ms, visibility 0s linear 0s;
+}
+
+.carousel-ready .project-card[aria-hidden="false"]:hover .project-topline,
+.carousel-ready .project-card[aria-hidden="false"]:focus-visible .project-topline,
+.carousel-ready .project-card[aria-hidden="false"].is-open .project-topline {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 28px;
+}
+
+@media (max-width: 760px) {
+    .carousel-ready .project-card {
+        left: calc(50% - 140px);
+        width: 280px;
+    }
+}
+
+
+/* ---------- Projects deck: flowing card switch (update) ----------
+   Cards behind peek out to the side; switching swings the front card out with a tilt
+   and tucks it behind, while the next card rises forward with a soft bounce. */
+.carousel-ready .project-card,
+.carousel-ready .project-card:hover,
+.carousel-ready .project-card:focus-visible {
+    /* --pd is the swing/drag distance as a plain number (pixels), so it can drive both the slide and the tilt */
+    transform:
+        translate3d(calc(var(--pd, 0) * 1px + var(--project-position, 0) * 22px), calc(var(--project-position, 0) * 16px), 0)
+        scale(calc(1 - var(--project-position, 0) * 0.05))
+        rotate(calc(var(--pd, 0) * 0.04deg + var(--project-position, 0) * 2.5deg));
+}
+
+.carousel-ready .project-card {
+    transition:
+        transform 650ms cubic-bezier(0.34, 1.4, 0.64, 1),
+        opacity 430ms ease,
+        top 600ms var(--ease),
+        left 600ms var(--ease),
+        width 600ms var(--ease),
+        height 600ms var(--ease),
+        box-shadow 300ms ease,
+        border-color 300ms ease,
+        filter 400ms ease;
+}
+
+/* while out at the side: quicker, smooth swing */
+.carousel-ready .project-card.project-swing {
+    transition:
+        transform 380ms cubic-bezier(0.3, 0.7, 0.3, 1),
+        top 600ms var(--ease),
+        left 600ms var(--ease),
+        width 600ms var(--ease),
+        height 600ms var(--ease);
+}
+
+/* cards further back are a little dimmer, so the stack reads clearly */
+.carousel-ready .project-card[aria-hidden="true"] {
+    filter: brightness(0.96) saturate(0.9);
+}
+
+
+/* =========================================================
+   CONTACT ANIMATIONS (added)
+   - "Have a question?": letters arrive from the left, "?" first ... "Have" last
+   - "Let's start a conversation.": a typing bubble (three dots), then the line pops in like a new message
+   - intro line in a light liquid glass card
+   - "Email me directly": unchanged look, very slight magnetic pull
+   - social links lift on hover and press
+   - form on a frosted (blurred) card; form and send button blur into focus; button lifts on hover
+   Plays when the script adds .ct-play (and replays when you scroll back).
+========================================================= */
+.ct-word,
+.ct-char {
+    display: inline-block;
+}
+
+.ct-word {
+    white-space: nowrap;
+}
+
+/* typing bubble */
+.ct-heading {
+    position: relative;
+}
+
+.ct-msg {
+    display: inline-block;
+    transform-origin: 0 100%;
+}
+
+.ct-typing {
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    display: inline-flex;
+    gap: 6px;
+    padding: 12px 16px;
+    border-radius: 18px 18px 18px 4px;
+    background: var(--white);
+    box-shadow: 0 8px 22px rgba(23, 35, 31, 0.1);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.ct-typing i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.35;
+}
+
+/* intro line: light liquid glass */
+.ct-glass {
+    position: relative;
+    max-width: 360px;
+    padding: 16px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.38));
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 12px 30px rgba(23, 35, 31, 0.08);
+}
+
+/* very slight magnetic pull */
+.ct-magnet {
+    transform: translate(var(--mx, 0px), var(--my, 0px));
+    transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* social links: lift on hover, press down on click */
+.social-card {
+    transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 180ms ease, background-color 180ms ease, box-shadow 280ms ease;
+}
+
+.social-card:hover,
+.social-card:focus-visible {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 22px rgba(23, 35, 31, 0.12);
+}
+
+.social-card:active {
+    transform: translateY(-2px) scale(0.97);
+}
+
+/* frosted form card, with soft colour behind it for the blur to pick up */
+.contact-section::before,
+.contact-section::after {
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    content: "";
+    filter: blur(50px);
+    pointer-events: none;
+}
+
+.contact-section::before {
+    right: 4%;
+    top: 0;
+    width: 340px;
+    height: 260px;
+    background: rgba(217, 95, 61, 0.2);
+}
+
+.contact-section::after {
+    right: 34%;
+    bottom: 90px;
+    width: 300px;
+    height: 220px;
+    background: rgba(47, 93, 80, 0.14);
+}
+
+.ct-frost {
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 14px;
+    background: linear-gradient(140deg, rgba(255, 253, 248, 0.7), rgba(255, 253, 248, 0.45));
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    backdrop-filter: blur(22px) saturate(140%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 22px 50px rgba(23, 35, 31, 0.1);
+}
+
+.ct-frost .button-dark:hover,
+.ct-frost .button-dark:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(47, 93, 80, 0.28);
+}
+
+.ct-frost .button-dark {
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 300ms ease, background-color 180ms ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .contact-section:not(.ct-play) .ct-char,
+    .js-enabled .contact-section:not(.ct-play) .ct-msg,
+    .js-enabled .contact-section:not(.ct-play) .ct-glass,
+    .js-enabled .contact-section:not(.ct-play) .text-link,
+    .js-enabled .contact-section:not(.ct-play) .social-card,
+    .js-enabled .contact-section:not(.ct-play) .ct-frost,
+    .js-enabled .contact-section:not(.ct-play) .ct-frost .button {
+        opacity: 0;
+    }
+
+    .contact-section {
+        animation: none;
+    }
+
+    .contact-section.ct-play .ct-char {
+        animation: ctFromLeft 0.6s var(--ease) both;
+        animation-delay: calc(var(--k, 0) * 45ms);
+    }
+
+    .contact-section.ct-play .ct-typing {
+        animation: ctBubble 1.6s ease both 0.45s;
+    }
+
+    .contact-section.ct-play .ct-typing i {
+        animation: ctDot 0.9s ease-in-out infinite;
+    }
+
+    .contact-section.ct-play .ct-typing i:nth-child(2) { animation-delay: 0.15s; }
+    .contact-section.ct-play .ct-typing i:nth-child(3) { animation-delay: 0.3s; }
+
+    .contact-section.ct-play .ct-msg {
+        animation: ctMessage 0.75s cubic-bezier(0.34, 1.45, 0.64, 1) 2s both;
+    }
+
+    .contact-section.ct-play .ct-glass {
+        animation: ctRise 0.9s var(--ease) 2.35s both;
+    }
+
+    .contact-section.ct-play .text-link {
+        animation: ctFade 0.7s ease 2.6s backwards;
+    }
+
+    .contact-section.ct-play .social-card {
+        animation: ctRise 0.7s var(--ease) backwards;
+        animation-delay: calc(2.7s + var(--s, 0) * 0.1s);
+    }
+
+    .contact-section.ct-play .ct-frost {
+        animation: ctFocus 1.2s ease-out 0.35s backwards;
+    }
+
+    .contact-section.ct-play .ct-frost .button {
+        animation: ctFocus 1s ease-out 1.3s backwards;
+    }
+}
+
+@keyframes ctFromLeft {
+    from { opacity: 0; transform: translateX(-28vw); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes ctBubble {
+    0%   { opacity: 0; transform: translateY(8px) scale(0.8); }
+    15%  { opacity: 1; transform: none; }
+    85%  { opacity: 1; transform: none; }
+    100% { opacity: 0; transform: scale(0.85); }
+}
+
+@keyframes ctDot {
+    0%, 100% { opacity: 0.35; transform: translateY(0); }
+    40%      { opacity: 1;    transform: translateY(-4px); }
+}
+
+@keyframes ctMessage {
+    from { opacity: 0; transform: translateY(14px) scale(0.92); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes ctRise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes ctFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes ctFocus {
+    from { opacity: 0; filter: blur(14px); transform: scale(0.98); }
+    to   { opacity: 1; filter: blur(0);    transform: none; }
+}
+
+
+/* ---------- Skills background: shield grid canvas (drawn by the script) ---------- */
+.shield-grid {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+}
+
+
+/* =========================================================
+   PROJECTS BACKGROUND: curtain reveal (added)
+   Two cream curtain panels with soft green folds part to reveal big lettering:
+   "Small builds," top left, "real lessons." bottom right. The small card sits between them;
+   an opened card covers them. The old BUILD/LEARN/REPEAT watermark is hidden here so the
+   new lettering stays readable.
+========================================================= */
+.projects-section::before {
+    display: none;
+}
+
+.pj-stage-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.pj-bg-word {
+    position: absolute;
+    color: rgba(47, 93, 80, 0.03);
+    font-size: clamp(2.8rem, 7.2vw, 6.4rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 0.95;
+    white-space: nowrap;
+    -webkit-text-stroke: 1.5px rgba(47, 93, 80, 0.3);
+}
+
+.pj-bg-top {
+    top: 30%;
+    left: 0;
+}
+
+.pj-bg-bottom {
+    right: 0;
+    bottom: 1%;
+    color: rgba(217, 95, 61, 0.04);
+    -webkit-text-stroke-color: rgba(217, 95, 61, 0.4);
+}
+
+/* curtain panels: only shown when the entrance can actually play */
+.pj-curtain {
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .pj-curtain {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        display: block;
+        width: 51%;
+        background:
+            repeating-linear-gradient(90deg,
+                rgba(47, 93, 80, 0.0) 0px,
+                rgba(47, 93, 80, 0.045) 18px,
+                rgba(255, 253, 248, 0.6) 34px,
+                rgba(47, 93, 80, 0.0) 52px),
+            var(--paper);
+        box-shadow: 0 0 40px rgba(23, 35, 31, 0.08);
+    }
+
+    .js-enabled .pj-curtain-left {
+        left: 0;
+        border-right: 2px solid rgba(217, 95, 61, 0.45);
+        transform-origin: 0 0;
+    }
+
+    .js-enabled .pj-curtain-right {
+        right: 0;
+        border-left: 2px solid rgba(217, 95, 61, 0.45);
+        transform-origin: 100% 0;
+    }
+
+    .projects-section.pj-play .pj-curtain-left {
+        animation: curtainLeft 1.6s cubic-bezier(0.7, 0, 0.2, 1) 0.25s forwards;
+    }
+
+    .projects-section.pj-play .pj-curtain-right {
+        animation: curtainRight 1.6s cubic-bezier(0.7, 0, 0.2, 1) 0.25s forwards;
+    }
+
+    /* lettering settles in as the curtains open */
+    .js-enabled .projects-section:not(.pj-play) .pj-bg-word {
+        opacity: 0;
+    }
+
+    .projects-section.pj-play .pj-bg-top {
+        animation: curtainWord 1.4s var(--ease) 0.6s both;
+    }
+
+    .projects-section.pj-play .pj-bg-bottom {
+        animation: curtainWord 1.4s var(--ease) 0.8s both;
+    }
+}
+
+@keyframes curtainLeft {
+    0%   { transform: translateX(0) skewY(0deg); }
+    35%  { transform: translateX(-30%) skewY(1.2deg); }
+    100% { transform: translateX(-102%) skewY(0deg); }
+}
+
+@keyframes curtainRight {
+    0%   { transform: translateX(0) skewY(0deg); }
+    35%  { transform: translateX(30%) skewY(-1.2deg); }
+    100% { transform: translateX(102%) skewY(0deg); }
+}
+
+@keyframes curtainWord {
+    from { opacity: 0; transform: scale(0.94); filter: blur(6px); }
+    to   { opacity: 1; transform: none;        filter: blur(0); }
+}
+
+/* =========================================================
+   CONTACT: soft drapes at the edges (added, matches the Projects curtain)
+   Two slim cream drapes with green folds and a coral hem line hang at the sides;
+   they draw in when the section appears and sway very gently.
+========================================================= */
+.ct-drape {
+    position: absolute;
+    top: -10px;
+    bottom: 40px;
+    z-index: -1;
+    width: 70px;
+    background:
+        repeating-linear-gradient(90deg,
+            rgba(47, 93, 80, 0.0) 0px,
+            rgba(47, 93, 80, 0.06) 12px,
+            rgba(255, 253, 248, 0.7) 22px,
+            rgba(47, 93, 80, 0.0) 34px),
+        rgba(244, 241, 234, 0.9);
+    opacity: 0.75;
+    pointer-events: none;
+    transform-origin: 50% 0;
+}
+
+.ct-drape-left {
+    left: -40px;
+    border-right: 2px solid rgba(217, 95, 61, 0.35);
+    border-radius: 0 0 28px 0;
+}
+
+.ct-drape-right {
+    right: -40px;
+    border-left: 2px solid rgba(217, 95, 61, 0.35);
+    border-radius: 0 0 0 28px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .contact-section.ct-play .ct-drape {
+        animation:
+            drapeIn 1.4s cubic-bezier(0.7, 0, 0.2, 1) both,
+            drapeSway 7s ease-in-out 1.4s infinite;
+    }
+
+    .contact-section.ct-play .ct-drape-right {
+        animation:
+            drapeIn 1.4s cubic-bezier(0.7, 0, 0.2, 1) both,
+            drapeSway 7s ease-in-out -3.5s infinite;
+    }
+
+    .js-enabled .contact-section:not(.ct-play) .ct-drape {
+        transform: scaleY(0);
+    }
+}
+
+@keyframes drapeIn {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+}
+
+@keyframes drapeSway {
+    0%, 100% { transform: skewX(0deg); }
+    50%      { transform: skewX(1.6deg); }
+}
+
+@media (max-width: 760px) {
+    .ct-drape { width: 40px; }
+    .ct-drape-left { left: -20px; }
+    .ct-drape-right { right: -20px; }
+}
+
+
+/* =========================================================
+   PROJECTS: velvet stage curtain (replaces the cream curtain + background lettering)
+   Deep green velvet panels with soft folds and a glowing coral seam cover the project stage.
+   "Small | builds," and "real | lessons." are split across the seam so they read as one phrase.
+   The curtain holds, then slowly parts and gathers at the sides (behind the cards).
+========================================================= */
+.projects-section::before {
+    display: grid;                    /* his BUILD / LEARN / REPEAT watermark is back */
+}
+
+.pj-velvet {
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .js-enabled .carousel-ready .pj-velvet {
+        position: absolute;
+        inset: 0 -6px;
+        z-index: 10;
+        display: block;
+        pointer-events: none;
+    }
+
+    .pj-panel {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        overflow: hidden;
+        background:
+            linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent 22%, transparent 78%, rgba(0, 0, 0, 0.3)),
+            repeating-linear-gradient(90deg,
+                #1f3d35 0px,
+                #2f5d50 16px,
+                #3d7263 26px,
+                #2f5d50 36px,
+                #1f3d35 52px);
+        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .pj-panel-left {
+        left: 0;
+        transform-origin: 0 50%;
+        border-right: 2px solid var(--accent);
+        border-radius: 10px 0 0 10px;
+    }
+
+    .pj-panel-right {
+        right: 0;
+        transform-origin: 100% 50%;
+        border-left: 2px solid var(--accent);
+        border-radius: 0 10px 10px 0;
+    }
+
+    /* the words sit against the seam: left panel right-aligned, right panel left-aligned */
+    .pj-panel-text {
+        position: absolute;
+        top: 50%;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        color: var(--accent-light);
+        font-size: clamp(2.2rem, 5.6vw, 4.6rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+        transform: translateY(-50%);
+        white-space: nowrap;
+    }
+
+    .pj-panel-left .pj-panel-text {
+        right: 14px;
+        align-items: flex-end;
+    }
+
+    .pj-panel-right .pj-panel-text {
+        left: 14px;
+        align-items: flex-start;
+    }
+
+    .pj-warm {
+        color: #f08a68;
+    }
+
+    /* glow along the seam while closed */
+    .pj-velvet::after {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc(50% - 1px);
+        width: 2px;
+        background: var(--accent);
+        box-shadow: 0 0 16px 3px rgba(217, 95, 61, 0.55);
+        content: "";
+        opacity: 0;
+    }
+
+    .projects-section.pj-play .pj-panel {
+        animation: velvetOpen 4.2s both;
+    }
+
+    .projects-section.pj-play .pj-panel-text {
+        animation: velvetWords 4.2s ease both;
+    }
+
+    .projects-section.pj-play .pj-velvet::after {
+        animation: velvetSeam 4.2s ease both;
+    }
+
+    /* when the section has played, the gathered curtains sit behind the cards */
+    .projects-section.pj-play .pj-velvet {
+        animation: velvetBehind 4.2s step-end both;
+    }
+}
+
+@keyframes velvetOpen {
+    0%   { transform: scaleX(1); filter: brightness(0.9); }
+    10%  { transform: scaleX(1); filter: brightness(1); }
+    48%  { transform: scaleX(1); animation-timing-function: cubic-bezier(0.65, 0, 0.25, 1); }
+    100% { transform: scaleX(0.075); filter: brightness(0.92); }
+}
+
+@keyframes velvetWords {
+    0%   { opacity: 0; transform: translateY(-50%) scale(0.96); }
+    14%  { opacity: 1; transform: translateY(-50%) scale(1); }
+    48%  { opacity: 1; }
+    64%  { opacity: 0; }
+    100% { opacity: 0; transform: translateY(-50%); }
+}
+
+@keyframes velvetSeam {
+    0%, 8% { opacity: 0; }
+    20%    { opacity: 1; }
+    46%    { opacity: 1; }
+    54%    { opacity: 0; }
+    100%   { opacity: 0; }
+}
+
+@keyframes velvetBehind {
+    0%   { z-index: 10; }
+    100% { z-index: 0; }
+}
